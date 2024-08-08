@@ -1,0 +1,87 @@
+.dataset-page th.sticky-header {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+}
+
+.dataset-page th.sticky-column,
+.dataset-page td.sticky-column {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 1;
+}
+
+.dataset-page .dataset-table .cell-highlight {
+  background: var(--main-color50);
+}
+
+.dataset-page .dataset-table td {
+  cursor: pointer;
+}
+
+.dataset-page .highlighted-cells-dropdown-menu {
+  position: absolute;
+  display: none;
+}
+
+.dataset-page .highlighted-cells-dropdown-menu.show {
+  display: block;
+}
+
+.cell-value-span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 400px;
+  display: block;
+}
+
+.dataset-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-top: 1px solid var(--bs-border-color);
+}
+
+.dataset-table th,
+.dataset-table td {
+  white-space: nowrap;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.dataset-table thead th {
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.dataset-table thead th.column-is-dragging {
+  opacity: 0.5;
+}
+
+.dataset-table thead th.column-dragging-placeholder {
+  background-color: #f0f0f0;
+  border: 1px dashed #ccc;
+}
+
+.dataset-table thead th div.column-resizer {
+  display: inline-block;
+  width: 5px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: col-resize;
+  user-select: none;
+}
+
+.dataset-table .column-pinned {
+  position: sticky;
+  background-color: white;
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dataset-page th.sticky-header.row-number-column {
+  z-index: 100;
+}
