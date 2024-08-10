@@ -16,10 +16,8 @@ export default {
 </script>
 
 <template>
-  <div class="content dataset-page">
-    <div class="container-fluid h-100 p-2">
-      <div class="d-flex flex-column h-100">Home Page</div>
-    </div>
+  <div class="content container-fluid p-2">
+    <div class="d-flex flex-column">Home Page</div>
   </div>
 </template>
 

@@ -1,9 +1,9 @@
 <template>
-  <footer class="footer bg-body-tertiary">
+  <footer class="footer bg-body-tertiary fixed-bottom">
     <div
       class="container-fluid h-100 d-flex justify-content-between align-items-center"
     >
-      <span>&copy; 2024 The GDrive Bridge. All rights reserved.</span>
+      <span>&copy; 2024 Demo. All rights reserved.</span>
     </div>
   </footer>
 </template>

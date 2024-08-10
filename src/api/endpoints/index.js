@@ -36,28 +36,8 @@ const endpoints = {
         path: "products/" + constructQueryParameters(requestParameters),
       })
     },
-    reload: endpoint({ path: "dataset/reload/" }),
     update: (id) => {
       return endpoint({ path: "products/" + id + "/" })
-    },
-    copy: (id) => {
-      return endpoint({ path: "products/" + id + "/copy/" })
-    },
-    delete: (id) => {
-      return endpoint({ path: "products/" + id + "/" })
-    },
-    search: (requestParameters) => {
-      return endpoint({
-        path: "products/search/" + constructQueryParameters(requestParameters),
-      })
-    },
-    changeAvailablity: (id) => {
-      return endpoint({ path: "products/" + id + "/change_availablity/" })
-    },
-    generateMarketingPostContentUsingAI: (id) => {
-      return endpoint({
-        path: "products/" + id + "/generate_marketing_post_content_using_ai/",
-      })
     },
   },
 }

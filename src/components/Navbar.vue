@@ -1,7 +1,7 @@
 <template>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
     <div class="container-fluid">
-      <a class="navbar-brand" :href="'/'">The GDrive Bridge</a>
+      <a class="navbar-brand" :href="'/'">Demo</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -16,11 +16,6 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
         <div class="d-flex align-items-center">
-          <form class="d-flex me-2" role="search">
-            <button type="button" class="btn btn-success btn-sm">
-              Connect your Google Drive
-            </button>
-          </form>
           <div class="dropdown flex-shrink-0 mx-2">
             <a
               href="#"
