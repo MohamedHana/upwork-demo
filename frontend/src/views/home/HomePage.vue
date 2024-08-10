@@ -3,7 +3,16 @@ export default {
   name: "HomePage",
   setup() {},
   components: {},
-  created() {},
+  created() {
+    this.api.requests
+      .restful(this.api.endpoints.test, {
+        method: "GET",
+        body: null,
+      })
+      .then((response) => {
+        console.log(response)
+      })
+  },
   mounted() {},
   beforeUnmount() {},
   data() {
