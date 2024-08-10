@@ -1,0 +1,1 @@
+import{_ as e}from"./index-IYYnG3HU.js";const t={name:"Skeleton",setup(){},components:{},created(){},mounted(){},beforeUnmount(){},props:{},data(){return{}},computed:{},watch:{},methods:{}};function o(n,r,s,c,a,p){return null}const d=e(t,[["render",o]]);export{d as default};
