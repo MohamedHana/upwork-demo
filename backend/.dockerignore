@@ -1,0 +1,43 @@
+# Ignore Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore virtual environments
+venv/
+env/
+
+# Ignore local environment variables
+.env
+*.env
+
+# Ignore database files
+*.sqlite3
+db.sqlite3
+
+# Ignore log files
+*.log
+
+# Ignore Django static files (they will be collected into a separate directory)
+static/
+staticfiles/
+
+# Ignore media files
+media/
+
+# Ignore any kind of temporary files
+*.swp
+*~
+.nfs*
+.DS_Store
+Thumbs.db
+
+# Ignore test coverage results
+.coverage
+htmlcov/
+
+# Ignore mypy type checker results
+.mypy_cache/
+
+# Ignore local settings file
+settings_local.py
