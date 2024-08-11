@@ -6,12 +6,15 @@ export default {
   created() {
     this.api.requests.restful(this.api.endpoints.test).then((response) => {
       console.log(response)
+      this.message = response
     })
   },
   mounted() {},
   beforeUnmount() {},
   data() {
-    return {}
+    return {
+      message: "Loading...",
+    }
   },
   computed: {},
   watch: {},
@@ -21,7 +24,13 @@ export default {
 
 <template>
   <div class="content container-fluid p-2">
-    <div class="d-flex flex-column">Home Page</div>
+    <div
+      class="d-flex flex-column justify-content-center align-items-center h-100"
+    >
+      <h6 class="text-center w-50">
+        {{ message }}
+      </h6>
+    </div>
   </div>
 </template>
 
