@@ -4,14 +4,9 @@ export default {
   setup() {},
   components: {},
   created() {
-    this.api.requests
-      .restful(this.api.endpoints.test, {
-        method: "GET",
-        body: null,
-      })
-      .then((response) => {
-        console.log(response)
-      })
+    this.api.requests.restful(this.api.endpoints.test).then((response) => {
+      console.log(response)
+    })
   },
   mounted() {},
   beforeUnmount() {},
