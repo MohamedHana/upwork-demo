@@ -6,14 +6,14 @@ export default {
   created() {
     this.api.requests.restful(this.api.endpoints.test).then((response) => {
       console.log(response)
-      this.message = response
+      // this.message = response
     })
   },
   mounted() {},
   beforeUnmount() {},
   data() {
     return {
-      message: "Loading...",
+      message: "Waiting for the figma designs to implement the charts!",
     }
   },
   computed: {},
