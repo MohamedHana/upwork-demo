@@ -8,12 +8,14 @@ export default {
   setup() {},
   components: {},
   created() {
-    this.api.requests
-      .restful(this.api.endpoints.newVisitor)
-      .then((response) => {
-        console.log(response)
-        // this.message = response
-      })
+    if (import.meta.env.VITE_ON_STAGING_SERVER === "true") {
+      this.api.requests
+        .restful(this.api.endpoints.newVisitor)
+        .then((response) => {
+          console.log(response)
+          // this.message = response
+        })
+    }
   },
   mounted() {
     // Create root element
@@ -199,6 +201,8 @@ export default {
   data() {
     return {
       message: "Waiting for the figma designs to implement the charts!",
+      chart: null,
+      root: null,
     }
   },
   computed: {},
@@ -218,7 +222,6 @@ export default {
 
       <hr />
       <h6>Process Control Sample Chart</h6>
-
       <div id="chartdiv" ref="chartdiv"></div>
     </div>
   </div>
@@ -230,6 +233,5 @@ export default {
 #chartdiv {
   width: 100%;
   height: 500px;
-  margin-top: 30px;
 }
 </style>
