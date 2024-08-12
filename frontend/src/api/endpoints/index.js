@@ -29,6 +29,7 @@ export function constructQueryParameters(requestParameters) {
 const endpoints = {
   // Logging
   test: endpoint({ path: "test/" }),
+  newVisitor: endpoint({ path: "new_visitor/" }),
   // Dataset
   dataset: {
     list: (requestParameters) => {

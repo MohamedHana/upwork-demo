@@ -16,9 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import TestAPIView
+from .views import NewVisitorView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/test/', TestAPIView.as_view(), name='test-api'),
+    path('api/new_visitor/', NewVisitorView.as_view(), name='new_visitor'),
 ]
