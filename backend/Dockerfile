@@ -1,18 +1,24 @@
 # Backend Dockerfile
-# Step 1: Use the latest full Python 3.12 as the base image
-FROM python:3.12
+
+# Step 1: Build Stage - Use the latest full Python 3.12-slim as the base image for building the application
+FROM python:3.12-slim AS builder
 
 # Step 2: Set the working directory inside the container
 WORKDIR /app
 
-# Step 3: Install dependencies
+# Step 3: Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Step 4: Install Python dependencies
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Step 4: Copy the rest of the application code
+# Step 5: Copy the rest of the application code
 COPY . .
 
-# Step 5: Set environment variables for Django
+# Step 6: Set environment variables for Django
 ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=backend.settings
 ENV DEBUG=${DEBUG}
@@ -28,15 +34,27 @@ ENV EMAIL_HOST_USER=${EMAIL_HOST_USER}
 ENV EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
 ENV EMAIL_DEBUG=${EMAIL_DEBUG}
 
-# Create the STATIC_ROOT directory
-RUN mkdir -p /app/staticfiles
-
-# Step 6: Collect static files and run Django migrations
+# Step 7: Collect static files (if your app has static files)
 RUN python manage.py collectstatic --noinput
+
+# Step 8: Run Django migrations
 RUN python manage.py migrate
 
-# Step 7: Expose port 8000 to the outside world
+# Step 9: Final Stage - Use an even more minimal base image for the final container
+FROM python:3.12-alpine AS final
+
+# Step 10: Set the working directory inside the final container
+WORKDIR /app
+
+# Step 11: Copy only the necessary files from the build stage
+COPY --from=builder /app /app
+
+# Step 12: Install only runtime dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir --no-deps -r requirements.txt
+
+# Step 13: Expose port 8000 to the outside world
 EXPOSE 8000
 
-# Step 8: Start the Django development server
+# Step 14: Start the Django application using the minimal runtime image
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

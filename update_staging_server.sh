@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Shut down docker app
-echo "Updating the staging server..."
+# Shut down docker
+echo "Shutting down docker..."
 docker compose down
 
 # Pull updates from the git repo
@@ -10,8 +10,12 @@ git fetch
 git pull
 echo "Pulled latest updates on 'staging' branch"
 
-# Clear docker 
-docker system prune -a --volumes -f
+# Clean docker 
+docker system prune -f
 
-# Turn on docker app
-docker compose up --build -d
+# Build docker containers
+docker compose build backend
+docker compose build frontend
+
+# Turn on docker
+docker compose up -d
