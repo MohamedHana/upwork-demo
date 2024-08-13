@@ -2,6 +2,11 @@ services:
   frontend:
     build:
       context: ./frontend
+      deploy:
+        resources:
+          limits:
+            memory: 714M
+            cpus: "1"
     ports:
       - "8080:80"
     networks:
@@ -11,10 +16,10 @@ services:
     build:
       context: ./backend
       deploy:
-      resources:
-        limits:
-          memory: 714M
-          cpus: "1"
+        resources:
+          limits:
+            memory: 714M
+            cpus: "1"
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend:/app
