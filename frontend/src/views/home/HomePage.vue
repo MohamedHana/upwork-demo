@@ -17,7 +17,7 @@ export default {
   beforeUnmount() {},
   data() {
     return {
-      message: "Waiting for you Dr Abd Alraziq to meet online!",
+      message: "Waiting for you Dr Abderisak to meet online!",
     }
   },
   computed: {},
