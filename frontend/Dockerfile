@@ -24,7 +24,7 @@ FROM nginx:alpine AS production-stage
 # Step 8: Copy the build output from the previous stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# Step 9: Remove default Nginx configuration and add your custom config (Optional)
+# Step 9: Remove default Nginx configuration and add your custom config for SPA vue 3 app
 RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d
 

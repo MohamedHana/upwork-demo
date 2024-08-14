@@ -15,3 +15,10 @@ app.use(router)
 app.config.globalProperties.api = api
 
 app.mount("#app")
+
+// Track visitors
+if (import.meta.env.VITE_ON_STAGING_SERVER === "true") {
+  api.requests.restful(api.endpoints.newVisitor).then((response) => {
+    console.log(response)
+  })
+}

@@ -6,6 +6,12 @@ const routerOptions = [
     meta: {},
   },
   {
+    path: "/quiz",
+    name: "QuizFunnelPage",
+    component: "quizfunnel/Index",
+    meta: {},
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "PageNotFound",
     component: "error/Error404",

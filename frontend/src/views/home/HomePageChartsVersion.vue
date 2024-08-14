@@ -8,16 +8,7 @@ export default {
   name: "HomePage",
   setup() {},
   components: {},
-  created() {
-    if (import.meta.env.VITE_ON_STAGING_SERVER === "true") {
-      this.api.requests
-        .restful(this.api.endpoints.newVisitor)
-        .then((response) => {
-          console.log(response)
-          // this.message = response
-        })
-    }
-  },
+  created() {},
   mounted() {
     this.createChart()
   },

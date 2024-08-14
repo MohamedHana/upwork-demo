@@ -1,0 +1,87 @@
+.diet-container {
+  display: flex;
+  gap: 120px;
+  padding: 40px 60px;
+}
+
+.diet-info {
+  max-width: 400px;
+}
+.diet-header {
+  font-weight: bold;
+  font-size: 2rem;
+}
+.diet-subtext {
+  font-size: 1rem;
+  color: #6c757d;
+  margin-top: 10px;
+}
+.diet-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.diet-image {
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+}
+.gender-buttons {
+  display: flex;
+  gap: 20px;
+}
+.gender-buttons .btn {
+  width: 180px;
+  font-size: 1.1rem;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stacked-boxes {
+  position: relative;
+  width: max-content;
+  margin: auto;
+
+  margin-top: -25px;
+}
+
+.stacked-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #e0f0ff;
+  width: 400px; /* Adjust this value to match the image size */
+  height: 400px; /* Adjust this value to match the image size */
+  border-radius: 10px;
+  z-index: -1;
+}
+
+.stacked-box-2 {
+  top: 25px;
+  left: 25px;
+  background-color: rgb(239 246 251) !important;
+  z-index: 1;
+  box-shadow: rgba(13, 10, 44, 0.08) 0px 2px 6px 0px;
+}
+
+.stacked-box-1 {
+  top: 50px;
+  left: 50px;
+  background-color: #d0e3f0;
+  box-shadow: rgba(13, 10, 44, 0.08) 0px 2px 6px 0px;
+}
+
+.main-image {
+  border-radius: 10px;
+  width: 400px; /* Adjust this value to match the image size */
+  height: 400px; /* Adjust this value to match the image size */
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+  background-color: #fff;
+  box-shadow: rgba(13, 10, 44, 0.08) 0px 2px 6px 0px;
+  border: 1px solid #ececec;
+}
