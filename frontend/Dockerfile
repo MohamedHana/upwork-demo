@@ -24,8 +24,12 @@ FROM nginx:alpine AS production-stage
 # Step 8: Copy the build output from the previous stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# Step 9: Expose port 80 to the outside world
+# Step 9: Remove default Nginx configuration and add your custom config (Optional)
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d
+
+# Step 10: Expose port 80 to the outside world
 EXPOSE 80
 
-# Step 10: Start the Nginx server
+# Step 11: Start the Nginx server
 CMD ["nginx", "-g", "daemon off;"]
