@@ -12,6 +12,12 @@ const routerOptions = [
     meta: {},
   },
   {
+    path: "/workflow_app",
+    name: "WorkflowAppPage",
+    component: "workflow_app/Index",
+    meta: {},
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "PageNotFound",
     component: "error/Error404",
