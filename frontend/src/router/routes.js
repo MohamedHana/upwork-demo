@@ -18,6 +18,12 @@ const routerOptions = [
     meta: {},
   },
   {
+    path: "/jordan_project",
+    name: "JordanProjectPage",
+    component: "jordan_project/Index",
+    meta: {},
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "PageNotFound",
     component: "error/Error404",
