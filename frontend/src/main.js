@@ -18,7 +18,16 @@ app.mount("#app")
 
 // Track visitors
 if (import.meta.env.VITE_ON_STAGING_SERVER === "true") {
-  api.requests.restful(api.endpoints.newVisitor).then((response) => {
-    console.log(response)
-  })
+  let params = {
+    visited_url: document.URL,
+  }
+
+  api.requests
+    .restful(api.endpoints.newVisitor, {
+      method: "POST",
+      body: JSON.stringify(params),
+    })
+    .then((response) => {
+      console.log(response)
+    })
 }

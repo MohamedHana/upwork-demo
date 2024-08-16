@@ -8,14 +8,22 @@ from utils import chatgpt, visitors
 
 
 class NewVisitorView(APIView):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         visitor_info = visitors.get_visitor_info(request)
+
+        # Get the incoming JSON stringified data
+        try:
+            # Parse the incoming data (assuming it's in JSON format)
+            incoming_data = json.loads(request.body.decode('utf-8'))
+            visitor_info.update(incoming_data)
+        except (json.JSONDecodeError, UnicodeDecodeError) as e:
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Convert the client_info dictionary to a formatted JSON string
         visitor_info_json = json.dumps(visitor_info, indent=4)
 
         send_mail(
-            f"A new visitor [{visitor_info['ip_address']}] to the staging server [https://d3jjitvwqr7c3v.cloudfront.net]",
+            f"A new visitor [{visitor_info['ip_address']}] to the staging server [{visitor_info['visited_url']}]",
             visitor_info_json,
             'mohamed.hana0@gmail.com',  # From email
             ['hana.pipeapps@gmail.com'],  # To emails
