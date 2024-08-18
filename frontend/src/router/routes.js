@@ -30,6 +30,12 @@ const routerOptions = [
     meta: {},
   },
   {
+    path: "/charity_project",
+    name: "CharityProjectPage",
+    component: "charity_project/Index",
+    meta: {},
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "PageNotFound",
     component: "error/Error404",
