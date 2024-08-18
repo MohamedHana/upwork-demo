@@ -229,126 +229,131 @@ export default {
 </script>
 
 <template>
-  <div class="content container-fluid p-2">
-    <div class="d-flex flex-column justify-content-center align-items-center">
-      <h4 class="text-center w-50 mb-4 mt-2">
-        {{ message }}
-      </h4>
+  <nav-bar></nav-bar>
+  <div class="content-wrapper">
+    <div class="content container-fluid p-2">
+      <div class="d-flex flex-column justify-content-center align-items-center">
+        <h4 class="text-center w-50 mb-4 mt-2">
+          {{ message }}
+        </h4>
 
-      <h5 class="">Revenue and Profit Trends Line Chart Sample</h5>
-      <div id="chartdiv" ref="chartdiv"></div>
+        <h5 class="">Revenue and Profit Trends Line Chart Sample</h5>
+        <div id="chartdiv" ref="chartdiv"></div>
 
-      <h5 class="my-4">Financial Analysis Report/Chart Types</h5>
-      <ol class="list-group m-5 mt-0">
-        <li class="list-group-item">
-          <h5>Revenue and Profit Trends</h5>
-          <p>
-            Line Charts or Bar Charts might be used to show revenue and profit
-            trends over time. This could include:
-          </p>
-          <ul>
-            <li>Monthly, quarterly, or annual revenue trends.</li>
-            <li>Comparison of actual vs. projected revenue.</li>
-            <li>Profit margins and net income trends.</li>
-          </ul>
-        </li>
-        <li class="list-group-item">
-          <h5>Expense Breakdown</h5>
-          <p>
-            Pie Charts or Stacked Bar Charts might be used to show the breakdown
-            of expenses by category (e.g., salaries, rent, utilities,
-            marketing). This helps visualize how much each category contributes
-            to total expenses.
-          </p>
-        </li>
-        <li class="list-group-item">
-          <h5>Cash Flow Analysis</h5>
-          <p>
-            Waterfall Charts could be used to illustrate the components of cash
-            flow, including operating activities, investing activities, and
-            financing activities. This chart helps in understanding the inflows
-            and outflows of cash over a period of time.
-          </p>
-        </li>
-        <li class="list-group-item">
-          <h5>Budget vs. Actual Performance</h5>
-          <p>
-            Comparison Bar Charts or Line Charts might be used to compare
-            budgeted figures against actual performance, helping to identify
-            variances in revenue, expenses, and profit.
-          </p>
-        </li>
-        <li class="list-group-item">
-          <h5>Key Financial Ratios</h5>
-          <p>
-            Radar Charts or Line Charts might be used to present key financial
-            ratios such as Return on Investment (ROI), Return on Equity (ROE),
-            Debt-to-Equity Ratio, and Current Ratio over time. These ratios
-            provide insights into the financial health of the company.
-          </p>
-        </li>
-        <li class="list-group-item">
-          <h5>Investment Portfolio Performance</h5>
-          <p>
-            Line Charts or Area Charts might be used to track the performance of
-            investment portfolios over time. This could include tracking the
-            value of stocks, bonds, and other assets.
-          </p>
-        </li>
-        <li class="list-group-item">
-          <h5>Balance Sheet Components</h5>
-          <p>
-            Stacked Bar Charts or Tree Maps could be used to visualize the
-            components of a balance sheet, such as assets, liabilities, and
-            equity. This helps in understanding the financial position of the
-            company.
-          </p>
-        </li>
-        <li class="list-group-item">
-          <h5>Profit & Loss Statement</h5>
-          <p>
-            Multi-series Line Charts or Stacked Area Charts might be used to
-            display components of the profit & loss statement, such as revenue,
-            cost of goods sold (COGS), gross profit, operating expenses, and net
-            income over time.
-          </p>
-        </li>
-        <li class="list-group-item">
-          <h5>Trend Analysis</h5>
-          <p>
-            Moving Average Charts or Trend Line Charts might be used to analyze
-            trends in financial metrics such as sales growth, expense reduction,
-            or profit growth over time. This helps in identifying patterns or
-            anomalies in financial performance.
-          </p>
-        </li>
-        <li class="list-group-item">
-          <h5>Financial Forecasting</h5>
-          <p>
-            Line Charts or Scenario Analysis Charts could be used to present
-            financial forecasts, showing expected future revenue, expenses, and
-            profit based on different scenarios (e.g., best case, worst case).
-          </p>
-        </li>
-        <li class="list-group-item">
-          <h5>Risk Management</h5>
-          <p>
-            Heat Maps or Risk Matrix Charts might be used to visualize financial
-            risks and their potential impact on the company. This could include
-            credit risk, market risk, and operational risk.
-          </p>
-        </li>
-        <li class="list-group-item">
-          <h5>Capital Allocation</h5>
-          <p>
-            Donut Charts or Bar Charts might be used to show how capital is
-            allocated across different departments or projects, helping to
-            visualize where the company is investing its resources.
-          </p>
-        </li>
-      </ol>
+        <h5 class="my-4">Financial Analysis Report/Chart Types</h5>
+        <ol class="list-group m-5 mt-0">
+          <li class="list-group-item">
+            <h5>Revenue and Profit Trends</h5>
+            <p>
+              Line Charts or Bar Charts might be used to show revenue and profit
+              trends over time. This could include:
+            </p>
+            <ul>
+              <li>Monthly, quarterly, or annual revenue trends.</li>
+              <li>Comparison of actual vs. projected revenue.</li>
+              <li>Profit margins and net income trends.</li>
+            </ul>
+          </li>
+          <li class="list-group-item">
+            <h5>Expense Breakdown</h5>
+            <p>
+              Pie Charts or Stacked Bar Charts might be used to show the
+              breakdown of expenses by category (e.g., salaries, rent,
+              utilities, marketing). This helps visualize how much each category
+              contributes to total expenses.
+            </p>
+          </li>
+          <li class="list-group-item">
+            <h5>Cash Flow Analysis</h5>
+            <p>
+              Waterfall Charts could be used to illustrate the components of
+              cash flow, including operating activities, investing activities,
+              and financing activities. This chart helps in understanding the
+              inflows and outflows of cash over a period of time.
+            </p>
+          </li>
+          <li class="list-group-item">
+            <h5>Budget vs. Actual Performance</h5>
+            <p>
+              Comparison Bar Charts or Line Charts might be used to compare
+              budgeted figures against actual performance, helping to identify
+              variances in revenue, expenses, and profit.
+            </p>
+          </li>
+          <li class="list-group-item">
+            <h5>Key Financial Ratios</h5>
+            <p>
+              Radar Charts or Line Charts might be used to present key financial
+              ratios such as Return on Investment (ROI), Return on Equity (ROE),
+              Debt-to-Equity Ratio, and Current Ratio over time. These ratios
+              provide insights into the financial health of the company.
+            </p>
+          </li>
+          <li class="list-group-item">
+            <h5>Investment Portfolio Performance</h5>
+            <p>
+              Line Charts or Area Charts might be used to track the performance
+              of investment portfolios over time. This could include tracking
+              the value of stocks, bonds, and other assets.
+            </p>
+          </li>
+          <li class="list-group-item">
+            <h5>Balance Sheet Components</h5>
+            <p>
+              Stacked Bar Charts or Tree Maps could be used to visualize the
+              components of a balance sheet, such as assets, liabilities, and
+              equity. This helps in understanding the financial position of the
+              company.
+            </p>
+          </li>
+          <li class="list-group-item">
+            <h5>Profit & Loss Statement</h5>
+            <p>
+              Multi-series Line Charts or Stacked Area Charts might be used to
+              display components of the profit & loss statement, such as
+              revenue, cost of goods sold (COGS), gross profit, operating
+              expenses, and net income over time.
+            </p>
+          </li>
+          <li class="list-group-item">
+            <h5>Trend Analysis</h5>
+            <p>
+              Moving Average Charts or Trend Line Charts might be used to
+              analyze trends in financial metrics such as sales growth, expense
+              reduction, or profit growth over time. This helps in identifying
+              patterns or anomalies in financial performance.
+            </p>
+          </li>
+          <li class="list-group-item">
+            <h5>Financial Forecasting</h5>
+            <p>
+              Line Charts or Scenario Analysis Charts could be used to present
+              financial forecasts, showing expected future revenue, expenses,
+              and profit based on different scenarios (e.g., best case, worst
+              case).
+            </p>
+          </li>
+          <li class="list-group-item">
+            <h5>Risk Management</h5>
+            <p>
+              Heat Maps or Risk Matrix Charts might be used to visualize
+              financial risks and their potential impact on the company. This
+              could include credit risk, market risk, and operational risk.
+            </p>
+          </li>
+          <li class="list-group-item">
+            <h5>Capital Allocation</h5>
+            <p>
+              Donut Charts or Bar Charts might be used to show how capital is
+              allocated across different departments or projects, helping to
+              visualize where the company is investing its resources.
+            </p>
+          </li>
+        </ol>
+      </div>
     </div>
   </div>
+  <footer-bar></footer-bar>
 </template>
 
 <style>

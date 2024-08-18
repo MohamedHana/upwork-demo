@@ -1,0 +1,80 @@
+body {
+  background-color: #0b0c10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  font-family: "Arial", sans-serif;
+}
+
+.glass-card {
+  padding: 40px;
+  border-radius: 20px;
+  width: 560px;
+  text-align: center;
+  position: relative;
+  border-radius: 30px;
+  background: linear-gradient(
+    123.54deg,
+    rgba(27, 31, 39, 0.1) 0.7%,
+    hsla(0, 0%, 100%, 0.01) 99.09%
+  );
+
+  border: 2px solid hsla(0, 0%, 100%, 0.08);
+  box-sizing: border-box;
+  box-shadow: 0 10px 20px rgba(6, 8, 11, 0.25);
+}
+
+.login-container h1 {
+  font-size: 3rem;
+  color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  letter-spacing: 5px;
+  background: linear-gradient(90deg, #ffffff, #b0b0b0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+.form-group {
+  position: relative;
+}
+
+.login-container input {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2rem;
+  padding: 10px 15px;
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 5px;
+}
+
+.login-container input:focus {
+  outline: none;
+  border-bottom-color: rgba(255, 255, 255, 0.8);
+}
+
+.form-check-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.login-container button {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  width: 100%;
+  cursor: not-allowed;
+}
+
+.login-container button:disabled {
+  opacity: 0.7;
+}

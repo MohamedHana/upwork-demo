@@ -8,11 +8,18 @@ import router from "./router/index"
 import api from "@/api"
 import App from "./App.vue"
 
+import NavBar from "@/components/Navbar.vue"
+import FooterBar from "@/components/Footerbar.vue"
+
 const app = createApp(App)
 
 app.use(store)
 app.use(router)
 app.config.globalProperties.api = api
+
+// Register the global components
+app.component("NavBar", NavBar)
+app.component("FooterBar", FooterBar)
 
 app.mount("#app")
 

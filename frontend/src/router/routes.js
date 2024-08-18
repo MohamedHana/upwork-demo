@@ -24,6 +24,12 @@ const routerOptions = [
     meta: {},
   },
   {
+    path: "/educate_clone",
+    name: "EducateClonePage",
+    component: "educate_clone/Index",
+    meta: {},
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "PageNotFound",
     component: "error/Error404",

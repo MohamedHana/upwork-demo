@@ -15,15 +15,19 @@ export default {
 </script>
 
 <template>
-  <div class="content">
-    <div class="container-fluid h-100 p-2">
-      <div
-        class="d-flex flex-column h-100 justify-content-center align-items-center"
-      >
-        <strong>404 - Page not found</strong>
+  <nav-bar></nav-bar>
+  <div class="content-wrapper">
+    <div class="content">
+      <div class="container-fluid h-100 p-2">
+        <div
+          class="d-flex flex-column h-100 justify-content-center align-items-center"
+        >
+          <strong>404 - Page not found</strong>
+        </div>
       </div>
     </div>
   </div>
+  <footer-bar></footer-bar>
 </template>
 
 <style></style>
