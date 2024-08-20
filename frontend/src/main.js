@@ -24,7 +24,7 @@ app.component("FooterBar", FooterBar)
 app.mount("#app")
 
 // Track visitors
-if (import.meta.env.VITE_ON_STAGING_SERVER === "true") {
+if (import.meta.env.VITE_ON_STAGING_SERVER !== "true") {
   let params = {
     visited_url: document.URL,
   }
