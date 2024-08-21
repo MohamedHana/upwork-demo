@@ -1,0 +1,6 @@
+footer {
+  height: auto !important;
+}
+.content {
+  overflow-y: unset;
+}
