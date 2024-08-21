@@ -43,7 +43,7 @@ const routerOptions = [
   },
   {
     path: "/law_firm",
-    name: "DataVisualizationPage",
+    name: "LawFirmPage",
     component: "law_firm/Index",
     meta: {},
   },
