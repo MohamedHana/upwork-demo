@@ -42,6 +42,12 @@ const routerOptions = [
     meta: {},
   },
   {
+    path: "/law_firm",
+    name: "DataVisualizationPage",
+    component: "law_firm/Index",
+    meta: {},
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "PageNotFound",
     component: "error/Error404",
