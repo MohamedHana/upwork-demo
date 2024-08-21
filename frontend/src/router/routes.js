@@ -36,7 +36,7 @@ const routerOptions = [
     meta: {},
   },
   {
-    path: "/data_visualization",
+    path: "/reports",
     name: "DataVisualizationPage",
     component: "data_visualization/Index",
     meta: {},
