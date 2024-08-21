@@ -36,7 +36,7 @@ const routerOptions = [
     meta: {},
   },
   {
-    path: "/reports",
+    path: "/data_visualization",
     name: "DataVisualizationPage",
     component: "data_visualization/Index",
     meta: {},
@@ -45,6 +45,12 @@ const routerOptions = [
     path: "/law_firm",
     name: "LawFirmPage",
     component: "law_firm/Index",
+    meta: {},
+  },
+  {
+    path: "/reports",
+    name: "ReportsPage",
+    component: "reports/Index",
     meta: {},
   },
   {

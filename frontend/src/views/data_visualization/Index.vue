@@ -21,7 +21,7 @@ export default {
   data() {
     return {
       message:
-        "I am working to generate a report from the attached excel sheets. Sanjay, let's meet, brainstorm your business, determine reports/features, and set a timeline",
+        "Let's meet, brainstorm your dashboard, determine features, and set a timeline",
       chart: null,
       root: null,
     }
