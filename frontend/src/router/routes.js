@@ -42,12 +42,6 @@ const routerOptions = [
     meta: {},
   },
   {
-    path: "/law_firm",
-    name: "LawFirmPage",
-    component: "law_firm/Index",
-    meta: {},
-  },
-  {
     path: "/reports",
     name: "ReportsPage",
     component: "reports/Index",
