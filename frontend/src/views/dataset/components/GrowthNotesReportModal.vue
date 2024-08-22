@@ -117,7 +117,7 @@ export default {
                     <th scope="col">Protection Level</th>
                     <th scope="col">Max Return</th>
                     <th scope="col">Upside Participation</th>
-                    <th scope="col">Underlying Index Performance</th>
+                    <th scope="col">Underliers</th>
                     <th scope="col">Features</th>
                   </tr>
                 </thead>
@@ -138,7 +138,21 @@ export default {
                     <td>{{ row["Protection Level"] }}</td>
                     <td>{{ row["Max Return"] }}</td>
                     <td>{{ row["Upside Participation"] }}</td>
-                    <td>{{ row.Underliers }}</td>
+                    <td>
+                      <span
+                        v-for="underlier in row['Underliers']"
+                        class="badge d-block mb-1"
+                        :class="{
+                          'text-bg-primary': underlier.active,
+                          'text-bg-secondary': !underlier.active,
+                        }"
+                      >
+                        {{ underlier.name }}
+                        <span class="ms-1 d-block" v-if="underlier.active"
+                          >({{ underlier.performance }})</span
+                        >
+                      </span>
+                    </td>
                     <td>{{ row.Features }}</td>
                   </tr>
                 </tbody>

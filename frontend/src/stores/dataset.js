@@ -19,24 +19,29 @@ export const useDatasetStore = defineStore("dataset", {
             // Issuer/CUSIP
             const issuerCusip = `${row["Issuer"] || "Undetermined Issuer"}, ${row["Cusip"] || "Undetermined Cusip"}`
 
-            // Term in months
-            const issueDate = new Date(row["Issue Date"])
-            const maturityDate = new Date(row["Maturity Date"])
-            const termMonths =
-              (maturityDate.getFullYear() - issueDate.getFullYear()) * 12 +
-              (maturityDate.getMonth() - issueDate.getMonth())
+            // Validate and calculate Term in months only if both Issue Date and Maturity Date exist
+            let termMonths = "Undetermined"
+            if (row["Issue Date"] && row["Maturity Date"]) {
+              const issueDate = new Date(row["Issue Date"])
+              const maturityDate = new Date(row["Maturity Date"])
+              termMonths =
+                (maturityDate.getFullYear() - issueDate.getFullYear()) * 12 +
+                (maturityDate.getMonth() - issueDate.getMonth())
+            }
 
             // Redemption (Maturity Date)
             const redemption = row["Maturity Date"] || "Undetermined"
 
-            // Amt Invested (Total Notional)
-            const amtInvested = row["Total Notional (USD)"]
-              ? parseFloat(row["Total Notional (USD)"].toFixed(2))
-              : 0
+            // Amt Invested (Total Notional) - Use 0 if it's explicitly set to 0, otherwise use the parsed number
+            const amtInvested =
+              row["Total Notional (USD)"] !== undefined
+                ? parseFloat(row["Total Notional (USD)"].toFixed(2))
+                : 0
 
             // Current Value (Mark to Market * Total Notional)
             const currentValue =
-              row["Mark To Market Value"] && row["Total Notional (USD)"]
+              row["Mark To Market Value"] !== undefined &&
+              row["Total Notional (USD)"] !== undefined
                 ? parseFloat(
                     (
                       row["Mark To Market Value"] * row["Total Notional (USD)"]
@@ -45,13 +50,15 @@ export const useDatasetStore = defineStore("dataset", {
                 : 0
 
             // Current Value % (Mark to Market - 100)
-            const currentValuePercent = row["Mark To Market Value"]
-              ? parseFloat((row["Mark To Market Value"] - 100).toFixed(2))
-              : 0
+            const currentValuePercent =
+              row["Mark To Market Value"] !== undefined
+                ? parseFloat((row["Mark To Market Value"] - 100).toFixed(2))
+                : 0
 
             // Intrinsic Value (Total Notional * Intrinsic Value)
             const intrinsicValue =
-              row["Total Notional (USD)"] && row["Intrinsic Value"]
+              row["Total Notional (USD)"] !== undefined &&
+              row["Intrinsic Value"] !== undefined
                 ? parseFloat(
                     (
                       row["Total Notional (USD)"] * row["Intrinsic Value"]
@@ -60,19 +67,22 @@ export const useDatasetStore = defineStore("dataset", {
                 : 0
 
             // Intrinsic Value % (Intrinsic Value - 100)
-            const intrinsicValuePercent = row["Intrinsic Value"]
-              ? parseFloat((row["Intrinsic Value"] - 100).toFixed(2))
-              : 0
+            const intrinsicValuePercent =
+              row["Intrinsic Value"] !== undefined
+                ? parseFloat((row["Intrinsic Value"] - 100).toFixed(2))
+                : 0
 
             // Protection (Protection Proximity - Underlier Performance)
             const protectionType =
-              row["Structure Type"].toLowerCase().includes("trigger") ||
-              row["Structure Type"].toLowerCase().includes("buffer")
+              row["Structure Type"] &&
+              (row["Structure Type"].toLowerCase().includes("trigger") ||
+                row["Structure Type"].toLowerCase().includes("buffer"))
                 ? "Hard Buffer"
                 : "Barrier"
+
             const protectionPercent =
-              row["Protection Proximity Level Abs"] &&
-              row["Underlier Performance Percent"]
+              row["Protection Proximity Level Abs"] !== undefined &&
+              row["Underlier Performance Percent"] !== undefined
                 ? parseFloat(
                     (
                       row["Protection Proximity Level Abs"] -
@@ -83,28 +93,45 @@ export const useDatasetStore = defineStore("dataset", {
 
             // Protection Level (from Protection Proximity)
             const protectionLevel =
-              row["Protection Proximity Level Abs"] || "Undetermined"
+              row["Protection Proximity Level Abs"] !== undefined
+                ? parseFloat(row["Protection Proximity Level Abs"].toFixed(2)) +
+                  "%"
+                : "Undetermined"
 
             // Max Return (from Column AC, or "unlimited")
             const maxReturn = row["Max Return"] || "unlimited"
 
             // Upside Participation (from Column AD)
             const upsideParticipation =
-              row["Upside Participation Rate"] || "Undetermined"
+              row["Upside Participation Rate"] !== undefined
+                ? parseFloat(row["Upside Participation Rate"].toFixed(2)) + "%"
+                : "Undetermined"
 
             // Underliers (list of underliers with performance highlighted for the active one)
-            const underliers = row["List of Underliers"] || ""
-            const activeUnderlier = row["Active Underlier"] || ""
-            const underlierPerformance = row["Underlier Performance"] || 0
-            const underliersWithPerformance = underliers
-              ? underliers
-                  .split(", ")
-                  .map((underlier) =>
-                    underlier === activeUnderlier
-                      ? `${underlier} (${parseFloat(underlierPerformance.toFixed(2))}%)`
-                      : underlier,
-                  )
-              : ["Undetermined"]
+            let underliers = []
+            if (row["List Of Underliers"]) {
+              const activeUnderlier = row["Active Underlier"]
+                ? row["Active Underlier"].trim()
+                : ""
+              const underlierPerformance =
+                row["Underlier Performance Percent"] !== undefined
+                  ? parseFloat(row["Underlier Performance Percent"].toFixed(2))
+                  : 0
+
+              // Remove the brackets and split the string into an array
+              underliers = row["List Of Underliers"]
+                .replace(/[\[\]]/g, "")
+                .split(", ")
+                .map((underlier) => {
+                  const name = underlier.trim()
+
+                  return {
+                    name: name,
+                    performance: `${underlierPerformance}%`,
+                    active: name === activeUnderlier,
+                  }
+                })
+            }
 
             // Features (Structure Type)
             const features = row["Structure Type"] || "Undetermined"
@@ -124,7 +151,7 @@ export const useDatasetStore = defineStore("dataset", {
               "Protection Level": protectionLevel,
               "Max Return": maxReturn,
               "Upside Participation": upsideParticipation,
-              Underliers: underliersWithPerformance.join(", "),
+              Underliers: underliers,
               Features: features,
             }
           })
