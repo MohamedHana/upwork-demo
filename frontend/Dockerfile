@@ -15,8 +15,8 @@ RUN npm install --no-cache
 # Step 5: Copy the rest of the application code from the frontend folder
 COPY . .
 
-# Step 6: Build the Vue.js application
-RUN npm run build
+# Step 6: Build the Vue.js application with increased memory limit
+RUN node --max-old-space-size=720 node_modules/.bin/vite build
 
 # Step 7: Production Stage - Use a minimal Nginx image to serve the application
 FROM nginx:alpine AS production-stage
