@@ -10,7 +10,7 @@ export const useDatasetStore = defineStore("dataset", {
     haveDatasets: (state) => {
       return state.datasets.length > 0
     },
-    growthNotesReportData: (state) => {
+    reportsData: (state) => {
       let data = []
 
       state.datasets.forEach((dataset) => {
@@ -99,7 +99,9 @@ export const useDatasetStore = defineStore("dataset", {
                 : "Undetermined"
 
             // Max Return (from Column AC, or "unlimited")
-            const maxReturn = row["Max Return"] || "unlimited"
+            const maxReturn = row["Max Return"]
+              ? parseFloat(row["Max Return"].toFixed(2))
+              : "unlimited"
 
             // Upside Participation (from Column AD)
             const upsideParticipation =
@@ -198,6 +200,11 @@ export const useDatasetStore = defineStore("dataset", {
       ds = this.datasets.find((dataset) => dataset.code === ds.code)
 
       ds.is_dumped = false
+    },
+    deleteDataset(ds) {
+      this.datasets = this.datasets.filter(
+        (dataset) => dataset.code !== ds.code,
+      )
     },
     exportReport(processedData) {
       const worksheet = XLSX.utils.json_to_sheet(processedData)

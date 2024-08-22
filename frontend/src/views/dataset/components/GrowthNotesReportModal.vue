@@ -18,48 +18,51 @@ export default {
   },
   computed: {
     ...mapState(useDatasetStore, {
-      growthNotesReportData: "growthNotesReportData",
+      reportsData: "reportsData",
     }),
     // Total Amt Invested
     totalInvested() {
-      const total = this.growthNotesReportData.reduce(
+      const total = this.reportsData.reduce(
         (sum, row) => sum + (parseFloat(row["Amt Invested"]) || 0),
         0,
       )
       return parseFloat(total.toFixed(2))
     },
-
     // Total Current Value
     totalCurrentValue() {
-      const total = this.growthNotesReportData.reduce(
+      const total = this.reportsData.reduce(
         (sum, row) => sum + (parseFloat(row["Current Value"]) || 0),
         0,
       )
       return parseFloat(total.toFixed(2))
     },
-
     // Total Current Value %
     totalPercentage() {
-      if (this.totalInvested === 0) return 0 // Avoid division by zero
-      const percentage = (this.totalCurrentValue / this.totalInvested - 1) * 100
-      return parseFloat(percentage.toFixed(2))
+      const count = this.reportsData.length
+      if (count === 0) return 0 // Avoid division by zero
+      const total = this.reportsData.reduce(
+        (sum, row) => sum + (parseFloat(row["Current Value %"]) || 0),
+        0,
+      )
+      return parseFloat(total / count).toFixed(2)
     },
-
     // Total Intrinsic Value
     totalIntrinsicValue() {
-      const total = this.growthNotesReportData.reduce(
+      const total = this.reportsData.reduce(
         (sum, row) => sum + (parseFloat(row["Intrinsic Value"]) || 0),
         0,
       )
       return parseFloat(total.toFixed(2))
     },
-
     // Total Intrinsic Value %
     totalIntrinsicPercentage() {
-      if (this.totalInvested === 0) return 0 // Avoid division by zero
-      const percentage =
-        (this.totalIntrinsicValue / this.totalInvested - 1) * 100
-      return parseFloat(percentage.toFixed(2))
+      const count = this.reportsData.length
+      if (count === 0) return 0 // Avoid division by zero
+      const total = this.reportsData.reduce(
+        (sum, row) => sum + (parseFloat(row["Intrinsic Value %"]) || 0),
+        0,
+      )
+      return parseFloat(total / count).toFixed(2)
     },
   },
   watch: {},
@@ -122,10 +125,7 @@ export default {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(row, rowIndex) in growthNotesReportData"
-                    :key="rowIndex"
-                  >
+                  <tr v-for="(row, rowIndex) in reportsData" :key="rowIndex">
                     <td>{{ row["Issuer/CUSIP"] }}</td>
                     <td>{{ row.Term }}</td>
                     <td>{{ row.Redemption }}</td>

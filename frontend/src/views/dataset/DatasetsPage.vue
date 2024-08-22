@@ -37,6 +37,7 @@ export default {
       loadNewDataFile: "loadNewDataFile",
       dumpDataset: "dumpDataset",
       unloadDataset: "unloadDataset",
+      deleteDataset: "deleteDataset",
     }),
     handleDragOver() {
       this.isDragOver = true
@@ -62,9 +63,10 @@ export default {
     },
     validateAndSetFile(file) {
       if (file.name.endsWith(".xlsx") || file.name.endsWith(".csv")) {
-        this.selectedFile = file
-        this.errorMessage = ""
         this.loadNewDataFile(file)
+        this.selectedFile = null
+        this.errorMessage = ""
+        this.$refs.fileInput.value = ""
       } else {
         this.errorMessage =
           "Invalid file type. Please upload a .xlsx or .csv file."
@@ -72,9 +74,6 @@ export default {
       }
     },
     viewDataset(dataset) {
-      alert("This feature is not implemented yet.")
-    },
-    deleteDataset(dataset) {
       alert("This feature is not implemented yet.")
     },
   },
