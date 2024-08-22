@@ -18,13 +18,11 @@ export default {
   },
   computed: {
     ...mapState(useDatasetStore, {
-      haveDatasets: "haveDatasets",
-      datasets: "datasets",
-      reportsData: "reportsData",
+      growthNotesReportData: "growthNotesReportData",
     }),
     // Total Amt Invested
     totalInvested() {
-      const total = this.reportsData.reduce(
+      const total = this.growthNotesReportData.reduce(
         (sum, row) => sum + (parseFloat(row["Amt Invested"]) || 0),
         0,
       )
@@ -33,7 +31,7 @@ export default {
 
     // Total Current Value
     totalCurrentValue() {
-      const total = this.reportsData.reduce(
+      const total = this.growthNotesReportData.reduce(
         (sum, row) => sum + (parseFloat(row["Current Value"]) || 0),
         0,
       )
@@ -49,7 +47,7 @@ export default {
 
     // Total Intrinsic Value
     totalIntrinsicValue() {
-      const total = this.reportsData.reduce(
+      const total = this.growthNotesReportData.reduce(
         (sum, row) => sum + (parseFloat(row["Intrinsic Value"]) || 0),
         0,
       )
@@ -124,7 +122,10 @@ export default {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(row, rowIndex) in reportsData" :key="rowIndex">
+                  <tr
+                    v-for="(row, rowIndex) in growthNotesReportData"
+                    :key="rowIndex"
+                  >
                     <td>{{ row["Issuer/CUSIP"] }}</td>
                     <td>{{ row.Term }}</td>
                     <td>{{ row.Redemption }}</td>

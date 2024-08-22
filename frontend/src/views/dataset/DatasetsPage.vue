@@ -23,7 +23,6 @@ export default {
     ...mapState(useDatasetStore, {
       haveDatasets: "haveDatasets",
       datasets: "datasets",
-      reportsData: "reportsData",
     }),
     fileSize() {
       if (this.selectedFile) {
@@ -37,6 +36,7 @@ export default {
     ...mapActions(useDatasetStore, {
       loadNewDataFile: "loadNewDataFile",
       dumpDataset: "dumpDataset",
+      unloadDataset: "unloadDataset",
     }),
     handleDragOver() {
       this.isDragOver = true
@@ -72,9 +72,6 @@ export default {
       }
     },
     viewDataset(dataset) {
-      alert("This feature is not implemented yet.")
-    },
-    unloadDataset(dataset) {
       alert("This feature is not implemented yet.")
     },
     deleteDataset(dataset) {
@@ -156,11 +153,11 @@ export default {
                           <td>
                             <button
                               type="button"
-                              class="btn btn-primary btn-sm"
+                              class="btn btn-warning btn-sm"
                               @click="unloadDataset(dataset)"
                               v-if="dataset.is_dumped"
                             >
-                              Unload from reports
+                              Unload data from reports
                             </button>
                             <button
                               type="button"
