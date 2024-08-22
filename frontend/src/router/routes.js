@@ -54,6 +54,18 @@ const routerOptions = [
     meta: {},
   },
   {
+    path: "/datasets",
+    name: "DatasetsPage",
+    component: "dataset/DatasetsPage",
+    meta: {},
+  },
+  {
+    path: "/debug",
+    name: "DebugPage",
+    component: "debug/Index",
+    meta: {},
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "PageNotFound",
     component: "error/Error404",
