@@ -44,10 +44,7 @@ export const useDatasetStore = defineStore("dataset", {
       console.log(this.datasets)
     },
     async dumpDataset(dataset) {
-      this.processData(dataset.json_data)
-    },
-    processData(data) {
-      const processedData = data.map((row) => {
+      const processedData = dataset.json_data.map((row) => {
         // Issuer/CUSIP
         const issuerCusip = `${row["Issuer"] || "Unknown"}, ${row["Cusip"] || "Unknown"}`
 
@@ -158,7 +155,6 @@ export const useDatasetStore = defineStore("dataset", {
       this.appendDataToReports(processedData)
       // this.exportReport(processedData)
     },
-
     exportReport(processedData) {
       const worksheet = XLSX.utils.json_to_sheet(processedData)
       const workbook = XLSX.utils.book_new()
