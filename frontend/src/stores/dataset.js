@@ -17,7 +17,7 @@ export const useDatasetStore = defineStore("dataset", {
         if (dataset.is_dumped) {
           const processedData = dataset.json_data.map((row) => {
             // Issuer/CUSIP
-            const issuerCusip = `${row["Issuer"] || "Unknown"}, ${row["Cusip"] || "Unknown"}`
+            const issuerCusip = `${row["Issuer"] || "Undetermined Issuer"}, ${row["Cusip"] || "Undetermined Cusip"}`
 
             // Term in months
             const issueDate = new Date(row["Issue Date"])
@@ -27,7 +27,7 @@ export const useDatasetStore = defineStore("dataset", {
               (maturityDate.getMonth() - issueDate.getMonth())
 
             // Redemption (Maturity Date)
-            const redemption = row["Maturity Date"] || "Unknown"
+            const redemption = row["Maturity Date"] || "Undetermined"
 
             // Amt Invested (Total Notional)
             const amtInvested = row["Total Notional (USD)"]
@@ -66,26 +66,31 @@ export const useDatasetStore = defineStore("dataset", {
 
             // Protection (Protection Proximity - Underlier Performance)
             const protectionType =
-              row["Structure Type"] && row["Structure Type"].includes("Trigger")
-                ? "Buffer"
+              row["Structure Type"].toLowerCase().includes("trigger") ||
+              row["Structure Type"].toLowerCase().includes("buffer")
+                ? "Hard Buffer"
                 : "Barrier"
             const protectionPercent =
-              row["Protection Proximity"] && row["Underlier Performance"]
+              row["Protection Proximity Level Abs"] &&
+              row["Underlier Performance Percent"]
                 ? parseFloat(
                     (
-                      row["Protection Proximity"] - row["Underlier Performance"]
+                      row["Protection Proximity Level Abs"] -
+                      row["Underlier Performance Percent"]
                     ).toFixed(2),
                   )
                 : 0
 
             // Protection Level (from Protection Proximity)
-            const protectionLevel = row["Protection Proximity"] || "Unknown"
+            const protectionLevel =
+              row["Protection Proximity Level Abs"] || "Undetermined"
 
             // Max Return (from Column AC, or "unlimited")
             const maxReturn = row["Max Return"] || "unlimited"
 
             // Upside Participation (from Column AD)
-            const upsideParticipation = row["Upside Participation"] || "Unknown"
+            const upsideParticipation =
+              row["Upside Participation Rate"] || "Undetermined"
 
             // Underliers (list of underliers with performance highlighted for the active one)
             const underliers = row["List of Underliers"] || ""
@@ -99,10 +104,10 @@ export const useDatasetStore = defineStore("dataset", {
                       ? `${underlier} (${parseFloat(underlierPerformance.toFixed(2))}%)`
                       : underlier,
                   )
-              : ["Unknown"]
+              : ["Undetermined"]
 
             // Features (Structure Type)
-            const features = row["Structure Type"] || "Unknown"
+            const features = row["Structure Type"] || "Undetermined"
 
             // Construct processed row
             return {

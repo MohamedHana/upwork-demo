@@ -97,7 +97,7 @@ export default {
                       class="btn btn-secondary btn-sm"
                       @click="triggerFileInput"
                     >
-                      Import a new data file
+                      Import new data file
                     </button>
                   </div>
                   <div>
@@ -210,7 +210,7 @@ export default {
                   ref="fileInput"
                   class="d-none"
                   @change="handleFileSelect"
-                  accept=".xlsx, .csv"
+                  accept=".xlsx,.csv"
                 />
                 <div id="fileInfo" class="mt-3 text-center">
                   <span v-if="selectedFile"

@@ -228,6 +228,7 @@ export default {
 /* Ensure columns have a minimum width */
 .reports-modal table td,
 .reports-modal table th {
-  min-width: 200px;
+  text-align: center;
+  vertical-align: middle;
 }
 </style>
