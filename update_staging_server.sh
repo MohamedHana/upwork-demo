@@ -11,7 +11,7 @@ git pull
 echo "Pulled latest updates on 'staging' branch"
 
 # Clean docker 
-# docker system prune -f
+docker system prune -f
 
 # Build docker containers
 docker compose build backend
