@@ -126,11 +126,12 @@ export const useDatasetStore = defineStore("dataset", {
                 .split(", ")
                 .map((underlier) => {
                   const name = underlier.trim()
+                  const isActive = name === activeUnderlier
 
                   return {
                     name: name,
-                    performance: `${underlierPerformance}%`,
-                    active: name === activeUnderlier,
+                    performance: isActive ? `${underlierPerformance}%` : "",
+                    active: isActive,
                   }
                 })
             }
@@ -163,6 +164,35 @@ export const useDatasetStore = defineStore("dataset", {
       })
 
       return data
+    },
+    growthNotesReportData: (state) => {
+      return state.reportsData.map((row) => {
+        const underliers = row["Underliers"]
+          .map((underlier) => {
+            if (underlier.active) {
+              return `(${underlier.name}: ${underlier.performance} performance)`
+            }
+            return `${underlier.name}`
+          })
+          .join(" • ")
+
+        return {
+          "Issuer/CUSIP": row["Issuer/CUSIP"],
+          Term: row["Term"],
+          Redemption: row["Redemption"],
+          "Amt Invested": row["Amt Invested"],
+          "Current Value": row["Current Value"],
+          "Current Value %": row["Current Value %"],
+          "Intrinsic Value": row["Intrinsic Value"],
+          "Intrinsic Value %": row["Intrinsic Value %"],
+          Protection: row["Protection"],
+          "Protection Level": row["Protection Level"],
+          "Max Return": row["Max Return"],
+          "Upside Participation": row["Upside Participation"],
+          Underliers: underliers,
+          Features: row["Features"],
+        }
+      })
     },
   },
   actions: {
@@ -205,6 +235,22 @@ export const useDatasetStore = defineStore("dataset", {
       this.datasets = this.datasets.filter(
         (dataset) => dataset.code !== ds.code,
       )
+    },
+    exportGrowthNotesReport() {
+      const worksheet = XLSX.utils.json_to_sheet(this.growthNotesReportData)
+
+      // Apply wrapText to each cell in column M
+      this.growthNotesReportData.forEach((row, index) => {
+        const cellAddress = `M${index + 2}` // Adjust for the header (starts from row 2)
+        if (worksheet[cellAddress]) {
+          // Enable wrapText for this cell
+          worksheet[cellAddress].s = { alignment: { wrapText: true } }
+        }
+      })
+
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, "GROWTH_NOTES_DATA")
+      XLSX.writeFile(workbook, "GROWTH_NOTES_REPORT.xlsx")
     },
     exportReport(processedData) {
       const worksheet = XLSX.utils.json_to_sheet(processedData)

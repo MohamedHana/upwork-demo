@@ -67,6 +67,9 @@ export default {
   },
   watch: {},
   methods: {
+    ...mapActions(useDatasetStore, {
+      exportGrowthNotesReport: "exportGrowthNotesReport",
+    }),
     formatCurrency(value) {
       let output = 0
 
@@ -188,6 +191,13 @@ export default {
             data-bs-dismiss="modal"
           >
             Go back to data files
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="exportGrowthNotesReport"
+          >
+            Export to Excel sheet
           </button>
         </div>
       </div>
