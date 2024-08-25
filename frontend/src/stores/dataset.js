@@ -1,6 +1,8 @@
 import { defineStore } from "pinia"
 import api from "@/api/index"
 import * as XLSX from "xlsx"
+import ExcelJS from "exceljs"
+import { saveAs } from "file-saver"
 
 export const useDatasetStore = defineStore("dataset", {
   state: () => ({
@@ -236,21 +238,170 @@ export const useDatasetStore = defineStore("dataset", {
         (dataset) => dataset.code !== ds.code,
       )
     },
-    exportGrowthNotesReport() {
-      const worksheet = XLSX.utils.json_to_sheet(this.growthNotesReportData)
+    // exportGrowthNotesReport() {
+    //   const worksheet = XLSX.utils.json_to_sheet(this.growthNotesReportData)
 
-      // Apply wrapText to each cell in column M
-      this.growthNotesReportData.forEach((row, index) => {
-        const cellAddress = `M${index + 2}` // Adjust for the header (starts from row 2)
-        if (worksheet[cellAddress]) {
-          // Enable wrapText for this cell
-          worksheet[cellAddress].s = { alignment: { wrapText: true } }
-        }
+    //   // Apply wrapText to each cell in column M
+    //   this.growthNotesReportData.forEach((row, index) => {
+    //     const cellAddress = `M${index + 2}` // Adjust for the header (starts from row 2)
+    //     if (worksheet[cellAddress]) {
+    //       // Enable wrapText for this cell
+    //       worksheet[cellAddress].s = { alignment: { wrapText: true } }
+    //     }
+    //   })
+
+    //   const workbook = XLSX.utils.book_new()
+    //   XLSX.utils.book_append_sheet(workbook, worksheet, "GROWTH_NOTES_DATA")
+    //   XLSX.writeFile(workbook, "GROWTH_NOTES_REPORT.xlsx")
+    // },
+    async exportGrowthNotesReport() {
+      // Create a new workbook and worksheet
+      const workbook = new ExcelJS.Workbook()
+      const worksheet = workbook.addWorksheet("Growth Notes")
+
+      // Add the header row
+      worksheet.addRow([
+        "Issuer/CUSIP",
+        "Term",
+        "Redemption",
+        "Amt Invested",
+        "Current Value",
+        "%",
+        "Intrinsic Value",
+        "%",
+        "Protection",
+        "Protection Level",
+        "Max Return",
+        "Upside Participation",
+        "Underliers",
+        "Features",
+      ])
+
+      // Add data rows
+      worksheet.addRow([
+        "JP Morgan, 48134R",
+        "24M",
+        "05/11/2025",
+        138000,
+        181539,
+        0.3155,
+        193752,
+        0.404,
+        "10% Hard Buffer",
+        "",
+        "",
+        1.15,
+        "RTY",
+        "Uncapped ATM Digital Worst Of Barrier Note",
+      ])
+      worksheet.addRow([
+        "Barclays, 0674",
+        "36M",
+        "05/11/2026",
+        138000,
+        171203,
+        0.2406,
+        175936,
+        0.2749,
+        "20% Hard Buffer",
+        "",
+        "",
+        1.15,
+        "INDU +23.91%",
+        "SPX",
+      ])
+      worksheet.addRow([
+        "JP Morgan, 4813",
+        "36M",
+        "05/02/2026",
+        138000,
+        185099,
+        0.3413,
+        209277,
+        0.5165,
+        "30% Barrier",
+        "",
+        "",
+        1.47,
+        "NDX",
+        "RTY",
+      ])
+      worksheet.addRow([
+        "BNP Paribas, 05610",
+        "5Y",
+        "03/11/2028",
+        138000,
+        186065,
+        0.3483,
+        198375,
+        0.4375,
+        "30% Barrier",
+        "",
+        "",
+        1.83,
+        "SPX +35.13%",
+        "INDU +23.91%",
+      ])
+      worksheet.addRow([
+        "TOTAL",
+        "",
+        "",
+        552000,
+        723907,
+        0.3114,
+        777340,
+        0.4082,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+      ])
+
+      // Apply basic styling to header row
+      worksheet.getRow(1).font = { bold: true }
+      worksheet.getRow(1).alignment = {
+        vertical: "middle",
+        horizontal: "center",
+      }
+      worksheet.getRow(1).fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFB3C6E7" }, // Light blue color
+      }
+
+      // Set column width for better presentation
+      worksheet.columns = [
+        { key: "Issuer/CUSIP", width: 30 },
+        { key: "Term", width: 10 },
+        { key: "Redemption", width: 15 },
+        { key: "Amt Invested", width: 15 },
+        { key: "Current Value", width: 15 },
+        { key: "Percentage", width: 10 },
+        { key: "Intrinsic Value", width: 15 },
+        { key: "Intrinsic %", width: 10 },
+        { key: "Protection", width: 20 },
+        { key: "Protection Level", width: 20 },
+        { key: "Max Return", width: 15 },
+        { key: "Upside Participation", width: 20 },
+        { key: "Underliers", width: 20 },
+        { key: "Features", width: 40 },
+      ]
+
+      // Format specific columns as currency and percentage
+      worksheet.getColumn(4).numFmt = "$#,##0"
+      worksheet.getColumn(5).numFmt = "$#,##0"
+      worksheet.getColumn(6).numFmt = "0.00%"
+      worksheet.getColumn(7).numFmt = "$#,##0"
+      worksheet.getColumn(8).numFmt = "0.00%"
+
+      // Generate the Excel file and save it
+      const buffer = await workbook.xlsx.writeBuffer()
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       })
-
-      const workbook = XLSX.utils.book_new()
-      XLSX.utils.book_append_sheet(workbook, worksheet, "GROWTH_NOTES_DATA")
-      XLSX.writeFile(workbook, "GROWTH_NOTES_REPORT.xlsx")
+      saveAs(blob, "growth_notes_exported.xlsx")
     },
     exportReport(processedData) {
       const worksheet = XLSX.utils.json_to_sheet(processedData)
