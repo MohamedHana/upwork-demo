@@ -13,9 +13,6 @@ Sub RESET_DIGITAL_NOTE_REPORT()
         reportSheet.Rows(lastRow).RowHeight = reportSheet.StandardHeight ' Reset to default row height
     End If
     
-    If reportSheet.Cells(lastRow, 1).Value = "TOTAL" Then
-    End If
-    
     ' Clear all contents (values, formulas) and formats starting from row 3 onwards
     With reportSheet.Rows("3:" & reportSheet.Rows.Count)
         .ClearContents
@@ -64,6 +61,7 @@ Sub REGENERATE_DIGITAL_NOTE_REPORT()
     reportRow = 3
     
     ' Initialize total variables
+    totalRows = 0
     totalAmtInvested = 0
     totalCurrentValue = 0
     totalIntrinsicValue = 0
@@ -72,7 +70,14 @@ Sub REGENERATE_DIGITAL_NOTE_REPORT()
     
     ' Loop through the data sheet and copy data to the report sheet
     For i = 2 To lastRow
-        
+        ' Check if Return Type is "Digital"
+        If dataSheet.Cells(i, 20).Value <> "Digital" Then
+            ' Skip to the next iteration if Return Type is not "Digital"
+            GoTo SkipRow
+        End If
+
+        totalRows = totalRows + 1
+
         ' Issuer/CUSIP
         reportSheet.Cells(reportRow, 1).Value = dataSheet.Cells(i, 3).Value & ", " & dataSheet.Cells(i, 1).Value
         
@@ -87,25 +92,25 @@ Sub REGENERATE_DIGITAL_NOTE_REPORT()
         reportSheet.Cells(reportRow, 4).NumberFormat = "[$$-409]#,##0"
         
         ' Current Value (Force USD Currency Formatting)
-        reportSheet.Cells(reportRow, 5).Value = dataSheet.Cells(i, 5).Value * dataSheet.Cells(i, 8).Value
+        reportSheet.Cells(reportRow, 5).Value = dataSheet.Cells(i, 5).Value * dataSheet.Cells(i, 8).Value / 100
         reportSheet.Cells(reportRow, 5).NumberFormat = "[$$-409]#,##0"
         
         ' Current Value % (Correct calculation, round to 2 decimal places, and append "%" as a string)
         reportSheet.Cells(reportRow, 6).Value = Round(dataSheet.Cells(i, 5).Value - 100, 2) & "%"
 
         ' Intrinsic Value (Force USD Currency Formatting)
-        reportSheet.Cells(reportRow, 7).Value = dataSheet.Cells(i, 8).Value * dataSheet.Cells(i, 22).Value
+        reportSheet.Cells(reportRow, 7).Value = dataSheet.Cells(i, 8).Value * dataSheet.Cells(i, 22).Value / 100
         reportSheet.Cells(reportRow, 7).NumberFormat = "[$$-409]#,##0"
         
         ' Intrinsic Value % (Correct calculation, round to 2 decimal places, and append "%" as a string)
-        reportSheet.Cells(reportRow, 8).Value = Round(dataSheet.Cells(i, 22).Value - 100, 2) & "%"
+        reportSheet.Cells(reportRow, 8).Value = dataSheet.Cells(i, 22).Value & "%"
         
         ' Accumulate totals for the relevant columns
         totalAmtInvested = totalAmtInvested + dataSheet.Cells(i, 8).Value
         totalCurrentValue = totalCurrentValue + reportSheet.Cells(reportRow, 5).Value
         totalIntrinsicValue = totalIntrinsicValue + reportSheet.Cells(reportRow, 7).Value
         totalCurrentValuePercent = totalCurrentValuePercent + (dataSheet.Cells(i, 5).Value - 100)
-        totalIntrinsicValuePercent = totalIntrinsicValuePercent + (dataSheet.Cells(i, 22).Value - 100)
+        totalIntrinsicValuePercent = totalIntrinsicValuePercent + dataSheet.Cells(i, 22).Value
         
         ' Protection (Buffer or Barrier)
         If InStr(1, dataSheet.Cells(i, 4).Value, "Trigger") > 0 Or InStr(1, dataSheet.Cells(i, 4).Value, "Buffer") > 0 Then
@@ -167,6 +172,7 @@ Sub REGENERATE_DIGITAL_NOTE_REPORT()
         
         ' Move to the next row in the report sheet
         reportRow = reportRow + 1
+    SkipRow:
     Next i
     
     ' Insert the Total row
@@ -182,14 +188,14 @@ Sub REGENERATE_DIGITAL_NOTE_REPORT()
     reportSheet.Cells(reportRow, 5).NumberFormat = "[$$-409]#,##0"
     reportSheet.Cells(reportRow, 5).Font.Bold = True
     
-    reportSheet.Cells(reportRow, 6).Value = Round(totalCurrentValuePercent / (lastRow - 1), 2) & "%"
+    reportSheet.Cells(reportRow, 6).Value = Round(totalCurrentValuePercent / totalRows, 2) & "%"
     reportSheet.Cells(reportRow, 6).Font.Bold = True
     
     reportSheet.Cells(reportRow, 7).Value = totalIntrinsicValue
     reportSheet.Cells(reportRow, 7).NumberFormat = "[$$-409]#,##0"
     reportSheet.Cells(reportRow, 7).Font.Bold = True
     
-    reportSheet.Cells(reportRow, 8).Value = Round(totalIntrinsicValuePercent / (lastRow - 1), 2) & "%"
+    reportSheet.Cells(reportRow, 8).Value = Round(totalIntrinsicValuePercent / totalRows, 2) & "%"
     reportSheet.Cells(reportRow, 8).Font.Bold = True
     
     ' Style the total row

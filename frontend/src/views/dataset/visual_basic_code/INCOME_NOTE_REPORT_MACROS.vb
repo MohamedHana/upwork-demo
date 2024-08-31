@@ -13,9 +13,6 @@ Sub RESET_INCOME_NOTE_REPORT()
         reportSheet.Rows(lastRow).RowHeight = reportSheet.StandardHeight ' Reset to default row height
     End If
     
-    If reportSheet.Cells(lastRow, 1).Value = "TOTAL" Then
-    End If
-    
     ' Clear all contents (values, formulas) and formats starting from row 3 onwards
     With reportSheet.Rows("3:" & reportSheet.Rows.Count)
         .ClearContents
@@ -64,13 +61,23 @@ Sub REGENRATE_INCOME_NOTE_REPORT()
     reportRow = 3
     
     ' Initialize total variables
+    totalRows = 0
     totalAmtInvested = 0
+    totalIntrinsicValue = 0
+    totalIntrinsicValuePercent = 0
     totalPaidSoFarPercent = 0
     totalPaidSoFarValue = 0
 
     ' Loop through the data sheet and copy data to the report sheet
     For i = 2 To lastRow
-        
+        ' Check if Return Type is "Income"
+        If dataSheet.Cells(i, 20).Value <> "Income" Then
+            ' Skip to the next iteration if Return Type is not "Income"
+            GoTo SkipRow
+        End If
+
+        totalRows = totalRows + 1
+
         ' Issuer/CUSIP
         reportSheet.Cells(reportRow, 1).Value = dataSheet.Cells(i, 3).Value & ", " & dataSheet.Cells(i, 1).Value
         
@@ -84,44 +91,53 @@ Sub REGENRATE_INCOME_NOTE_REPORT()
         reportSheet.Cells(reportRow, 4).Value = dataSheet.Cells(i, 8).Value
         reportSheet.Cells(reportRow, 4).NumberFormat = "[$$-409]#,##0"
 
+        ' Intrinsic Value (Force USD Currency Formatting)
+        reportSheet.Cells(reportRow, 6).Value = dataSheet.Cells(i, 8).Value * dataSheet.Cells(i, 22).Value  / 100
+        reportSheet.Cells(reportRow, 6).NumberFormat = "[$$-409]#,##0"
+        
+        ' Intrinsic Value % (Correct calculation, round to 2 decimal places, and append "%" as a string)
+        reportSheet.Cells(reportRow, 7).Value = dataSheet.Cells(i, 22).Value & "%"
+
         ' Protection (Buffer or Barrier)
         If InStr(1, dataSheet.Cells(i, 4).Value, "Trigger") > 0 Or InStr(1, dataSheet.Cells(i, 4).Value, "Buffer") > 0 Then
-            reportSheet.Cells(reportRow, 6).Value = Round(dataSheet.Cells(i, 16).Value - dataSheet.Cells(i, 11).Value, 0) & "% Buffer"
+            reportSheet.Cells(reportRow, 8).Value = Round(dataSheet.Cells(i, 16).Value - dataSheet.Cells(i, 11).Value, 0) & "% Buffer"
         Else
-            reportSheet.Cells(reportRow, 6).Value = Round(dataSheet.Cells(i, 16).Value - dataSheet.Cells(i, 11).Value, 0) & "% Barrier"
+            reportSheet.Cells(reportRow, 8).Value = Round(dataSheet.Cells(i, 16).Value - dataSheet.Cells(i, 11).Value, 0) & "% Barrier"
         End If
 
         ' Annual Yield 
         If Not IsEmpty(dataSheet.Cells(i, 15).Value) Then
-            reportSheet.Cells(reportRow, 7).Value = dataSheet.Cells(i, 15).Value & "%"
+            reportSheet.Cells(reportRow, 9).Value = dataSheet.Cells(i, 15).Value & "%"
         Else
-            reportSheet.Cells(reportRow, 7).Value = ""
+            reportSheet.Cells(reportRow, 9).Value = ""
         End If
 
         ' Yield 
         If Not IsEmpty(dataSheet.Cells(i, 15).Value) Then
-            reportSheet.Cells(reportRow, 8).Value = Round(dataSheet.Cells(i, 15).Value  / 12, 2) & "% per month"
+            reportSheet.Cells(reportRow, 10).Value = Round(dataSheet.Cells(i, 15).Value  / 12, 2) & "% per month"
         Else
-            reportSheet.Cells(reportRow, 8).Value = ""
+            reportSheet.Cells(reportRow, 10).Value = ""
         End If
 
         ' Protection Level (Percentage Formatting)
-        reportSheet.Cells(reportRow, 9).Value = dataSheet.Cells(i, 16).Value & "%"
+        reportSheet.Cells(reportRow, 11).Value = dataSheet.Cells(i, 16).Value & "%"
 
         ' % Paid So Far
-        reportSheet.Cells(reportRow, 10).Value = Round(dataSheet.Cells(i, 26).Value, 2) & "%"
+        reportSheet.Cells(reportRow, 12).Value = Round(dataSheet.Cells(i, 26).Value, 2) & "%"
 
         ' $ Paid So Far
-        reportSheet.Cells(reportRow, 11).Value = dataSheet.Cells(i, 8).Value * dataSheet.Cells(i, 26).Value
-        reportSheet.Cells(reportRow, 11).NumberFormat = "[$$-409]#,##0"
+        reportSheet.Cells(reportRow, 13).Value = dataSheet.Cells(i, 8).Value * dataSheet.Cells(i, 26).Value / 100
+        reportSheet.Cells(reportRow, 13).NumberFormat = "[$$-409]#,##0"
         
         ' Features
-        reportSheet.Cells(reportRow, 12).Value = dataSheet.Cells(i, 4).Value
+        reportSheet.Cells(reportRow, 14).Value = dataSheet.Cells(i, 4).Value
 
         ' Accumulate totals for the relevant columns
         totalAmtInvested = totalAmtInvested + dataSheet.Cells(i, 8).Value
+        totalIntrinsicValue = totalIntrinsicValue + reportSheet.Cells(reportRow, 6).Value
+        totalIntrinsicValuePercent = totalIntrinsicValuePercent + dataSheet.Cells(i, 22).Value
         totalPaidSoFarPercent = totalPaidSoFarPercent + dataSheet.Cells(i, 26).Value
-        totalPaidSoFarValue = totalPaidSoFarValue + reportSheet.Cells(reportRow, 11).Value
+        totalPaidSoFarValue = totalPaidSoFarValue + reportSheet.Cells(reportRow, 13).Value
 
         ' Underliers: Split into sub-rows and highlight the active underlier
         underliers = Replace(Replace(dataSheet.Cells(i, 12).Value, "[", ""), "]", "")
@@ -137,13 +153,15 @@ Sub REGENRATE_INCOME_NOTE_REPORT()
             reportSheet.Range(reportSheet.Cells(reportRow, 2), reportSheet.Cells(reportRow + rowsToMerge - 1, 2)).Merge ' Term
             reportSheet.Range(reportSheet.Cells(reportRow, 3), reportSheet.Cells(reportRow + rowsToMerge - 1, 3)).Merge ' Redemption
             reportSheet.Range(reportSheet.Cells(reportRow, 4), reportSheet.Cells(reportRow + rowsToMerge - 1, 4)).Merge ' Amt Invested
-            reportSheet.Range(reportSheet.Cells(reportRow, 6), reportSheet.Cells(reportRow + rowsToMerge - 1, 6)).Merge ' Protection
-            reportSheet.Range(reportSheet.Cells(reportRow, 7), reportSheet.Cells(reportRow + rowsToMerge - 1, 7)).Merge ' Annual Yield
-            reportSheet.Range(reportSheet.Cells(reportRow, 8), reportSheet.Cells(reportRow + rowsToMerge - 1, 8)).Merge ' Yield
-            reportSheet.Range(reportSheet.Cells(reportRow, 9), reportSheet.Cells(reportRow + rowsToMerge - 1, 9)).Merge ' Protection Level
-            reportSheet.Range(reportSheet.Cells(reportRow, 10), reportSheet.Cells(reportRow + rowsToMerge - 1, 10)).Merge ' % Paid So Far
-            reportSheet.Range(reportSheet.Cells(reportRow, 11), reportSheet.Cells(reportRow + rowsToMerge - 1, 11)).Merge ' $ Paid So Far
-            reportSheet.Range(reportSheet.Cells(reportRow, 12), reportSheet.Cells(reportRow + rowsToMerge - 1, 12)).Merge ' Features
+            reportSheet.Range(reportSheet.Cells(reportRow, 6), reportSheet.Cells(reportRow + rowsToMerge - 1, 6)).Merge ' Intrinsic Value
+            reportSheet.Range(reportSheet.Cells(reportRow, 7), reportSheet.Cells(reportRow + rowsToMerge - 1, 7)).Merge ' Intrinsic Value %
+            reportSheet.Range(reportSheet.Cells(reportRow, 8), reportSheet.Cells(reportRow + rowsToMerge - 1, 8)).Merge ' Protection
+            reportSheet.Range(reportSheet.Cells(reportRow, 9), reportSheet.Cells(reportRow + rowsToMerge - 1, 9)).Merge ' Annual Yield
+            reportSheet.Range(reportSheet.Cells(reportRow, 10), reportSheet.Cells(reportRow + rowsToMerge - 1, 10)).Merge ' Yield
+            reportSheet.Range(reportSheet.Cells(reportRow, 11), reportSheet.Cells(reportRow + rowsToMerge - 1, 11)).Merge ' Protection Level
+            reportSheet.Range(reportSheet.Cells(reportRow, 12), reportSheet.Cells(reportRow + rowsToMerge - 1, 12)).Merge ' % Paid So Far
+            reportSheet.Range(reportSheet.Cells(reportRow, 13), reportSheet.Cells(reportRow + rowsToMerge - 1, 13)).Merge ' $ Paid So Far
+            reportSheet.Range(reportSheet.Cells(reportRow, 14), reportSheet.Cells(reportRow + rowsToMerge - 1, 14)).Merge ' Features
         End If
         
         ' Insert underliers into separate rows
@@ -170,6 +188,7 @@ Sub REGENRATE_INCOME_NOTE_REPORT()
         
         ' Move to the next row in the report sheet
         reportRow = reportRow + 1
+    SkipRow:
     Next i
 
     ' Insert the Total row
@@ -180,16 +199,23 @@ Sub REGENRATE_INCOME_NOTE_REPORT()
     reportSheet.Cells(reportRow, 4).Value = totalAmtInvested
     reportSheet.Cells(reportRow, 4).NumberFormat = "[$$-409]#,##0"
     reportSheet.Cells(reportRow, 4).Font.Bold = True
+
+    reportSheet.Cells(reportRow, 6).Value = totalIntrinsicValue
+    reportSheet.Cells(reportRow, 6).NumberFormat = "[$$-409]#,##0"
+    reportSheet.Cells(reportRow, 6).Font.Bold = True
+
+    reportSheet.Cells(reportRow, 7).Value = Round(totalIntrinsicValuePercent / totalRows, 2) & "%"
+    reportSheet.Cells(reportRow, 7).Font.Bold = True
     
-    reportSheet.Cells(reportRow, 10).Value = Round(totalPaidSoFarPercent / (lastRow - 1), 2) & "%"
-    reportSheet.Cells(reportRow, 10).Font.Bold = True
+    reportSheet.Cells(reportRow, 12).Value = Round(totalPaidSoFarPercent / totalRows, 2) & "%"
+    reportSheet.Cells(reportRow, 12).Font.Bold = True
     
-    reportSheet.Cells(reportRow, 11).Value = totalPaidSoFarValue
-    reportSheet.Cells(reportRow, 11).NumberFormat = "[$$-409]#,##0"
-    reportSheet.Cells(reportRow, 11).Font.Bold = True
+    reportSheet.Cells(reportRow, 13).Value = totalPaidSoFarValue
+    reportSheet.Cells(reportRow, 13).NumberFormat = "[$$-409]#,##0"
+    reportSheet.Cells(reportRow, 13).Font.Bold = True
     
     ' Style the total row
-    reportSheet.Range(reportSheet.Cells(reportRow, 1), reportSheet.Cells(reportRow, 12)).Interior.Color = RGB(221, 235, 247) ' Light blue background
+    reportSheet.Range(reportSheet.Cells(reportRow, 1), reportSheet.Cells(reportRow, 14)).Interior.Color = RGB(221, 235, 247) ' Light blue background
     
     ' Increase the height of the total row
     reportSheet.Rows(reportRow).RowHeight = 60 ' Adjust the height as needed
@@ -204,7 +230,7 @@ Sub REGENRATE_INCOME_NOTE_REPORT()
     End With
 
     ' Add black borders to the cells 
-    With reportSheet.Range(reportSheet.Cells(reportRow, 1), reportSheet.Cells(reportRow, 12)).Borders
+    With reportSheet.Range(reportSheet.Cells(reportRow, 1), reportSheet.Cells(reportRow, 14)).Borders
         .LineStyle = xlContinuous
         .Color = RGB(0, 0, 0)
         .Weight = xlThin

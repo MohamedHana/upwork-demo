@@ -1,40 +1,36 @@
 Sub RESET_GROWTH_NOTES_REPORT()
     Dim reportSheet As Worksheet
-    Dim lastRow As Long
-    
-    ' Set the report sheet
     Set reportSheet = ThisWorkbook.Sheets("GROWTH NOTES REPORT")
 
-    ' Find the last row in the sheet (where the previous totals row might be)
-    lastRow = reportSheet.Cells(reportSheet.Rows.Count, 1).End(xlUp).Row
-
-    ' If the last row contains "TOTAL", reset its row height before clearing
-    If reportSheet.Cells(lastRow, 1).Value = "TOTAL" Then
-        reportSheet.Rows(lastRow).RowHeight = reportSheet.StandardHeight ' Reset to default row height
-    End If
-    
-    If reportSheet.Cells(lastRow, 1).Value = "TOTAL" Then
-    End If
-    
-    ' Clear all contents (values, formulas) and formats starting from row 3 onwards
-    With reportSheet.Rows("3:" & reportSheet.Rows.Count)
-        .ClearContents
-        .ClearFormats
-        .HorizontalAlignment = xlCenter
-        .VerticalAlignment = xlCenter
-    End With
+    Call Utils.ResetReport(reportSheet)
 End Sub
 
 Sub REGENERATE_GROWTH_NOTES_REPORT()
     Application.ScreenUpdating = False ' Turn off screen updating
     Application.Calculation = xlCalculationManual ' Turn off automatic calculation
 
-    ' Reset the Growth Notes Report to its initial state
-    Call RESET_GROWTH_NOTES_REPORT
-    
     Dim dataSheet As Worksheet
     Dim reportSheet As Worksheet
-    Dim lastRow As Long
+    
+    ' Set the data sheet and report sheet
+    Set dataSheet = ThisWorkbook.Sheets("DATA SHEET")
+    Set reportSheet = ThisWorkbook.Sheets("GROWTH NOTES REPORT")
+    
+    ' Check if the data sheet is empty (i.e., only headers or completely empty)
+    If Utils.IsEmptySheet(dataSheet) Then
+        MsgBox "The DATA SHEET is empty. No data available to generate the report.", vbExclamation
+        Application.ScreenUpdating = True ' Turn screen updating back on
+        Application.Calculation = xlCalculationAutomatic ' Turn calculation back on
+        Exit Sub
+    End If
+    
+    ' Reset the report sheet to its initial state
+    Call Utils.ResetReport(reportSheet)
+    
+    ' Determine data sheet last row
+    Dim dataSheetLastRow As Long
+    dataSheetLastRow = dataSheet.Cells(dataSheet.Rows.Count, 1).End(xlUp).Row
+
     Dim i As Long
     Dim reportRow As Long
     
@@ -45,25 +41,11 @@ Sub REGENERATE_GROWTH_NOTES_REPORT()
     Dim j As Integer
     Dim rowsToMerge As Long
 
-    ' Set the data sheet and report sheet
-    Set dataSheet = ThisWorkbook.Sheets("DATA SHEET")
-    Set reportSheet = ThisWorkbook.Sheets("GROWTH NOTES REPORT")
-
-    ' Find the last row in the data sheet
-    lastRow = dataSheet.Cells(dataSheet.Rows.Count, "A").End(xlUp).Row
-    
-   ' Check if the data sheet is empty (i.e., only headers or completely empty)
-    If lastRow <= 1 Then
-        MsgBox "The DATA SHEET is empty. No data to generate the report.", vbExclamation
-        Application.ScreenUpdating = True ' Turn screen updating back on
-        Application.Calculation = xlCalculationAutomatic ' Turn calculation back on
-        Exit Sub
-    End If
-
     ' Start populating the report from row 3 onwards
     reportRow = 3
     
     ' Initialize total variables
+    totalRows = 0
     totalAmtInvested = 0
     totalCurrentValue = 0
     totalIntrinsicValue = 0
@@ -71,68 +53,75 @@ Sub REGENERATE_GROWTH_NOTES_REPORT()
     totalIntrinsicValuePercent = 0
     
     ' Loop through the data sheet and copy data to the report sheet
-    For i = 2 To lastRow
+    For i = 2 To dataSheetLastRow
+        ' Check if Return Type is "Growth"
+        If dataSheet.Cells(i, 20).value <> "Growth" Then
+            ' Skip to the next iteration if Return Type is not "Growth"
+            GoTo SkipRow
+        End If
+
+        totalRows = totalRows + 1
         
         ' Issuer/CUSIP
-        reportSheet.Cells(reportRow, 1).Value = dataSheet.Cells(i, 3).Value & ", " & dataSheet.Cells(i, 1).Value
+        reportSheet.Cells(reportRow, 1).value = dataSheet.Cells(i, 3).value & ", " & dataSheet.Cells(i, 1).value
         
         ' Term (Calculate difference in months between Maturity Date and Issue Date, and append "M")
-        reportSheet.Cells(reportRow, 2).Value = DateDiff("m", dataSheet.Cells(i, 19).Value, dataSheet.Cells(i, 6).Value) & "M"
+        reportSheet.Cells(reportRow, 2).value = DateDiff("m", dataSheet.Cells(i, 19).value, dataSheet.Cells(i, 6).value) & "M"
         
         ' Redemption (Maturity Date)
-        reportSheet.Cells(reportRow, 3).Value = dataSheet.Cells(i, 6).Value
+        reportSheet.Cells(reportRow, 3).value = dataSheet.Cells(i, 6).value
         
         ' Amt Invested (Force USD Currency Formatting)
-        reportSheet.Cells(reportRow, 4).Value = dataSheet.Cells(i, 8).Value
+        reportSheet.Cells(reportRow, 4).value = dataSheet.Cells(i, 8).value
         reportSheet.Cells(reportRow, 4).NumberFormat = "[$$-409]#,##0"
         
         ' Current Value (Force USD Currency Formatting)
-        reportSheet.Cells(reportRow, 5).Value = dataSheet.Cells(i, 5).Value * dataSheet.Cells(i, 8).Value
+        reportSheet.Cells(reportRow, 5).value = dataSheet.Cells(i, 5).value * dataSheet.Cells(i, 8).value / 100
         reportSheet.Cells(reportRow, 5).NumberFormat = "[$$-409]#,##0"
         
         ' Current Value % (Correct calculation, round to 2 decimal places, and append "%" as a string)
-        reportSheet.Cells(reportRow, 6).Value = Round(dataSheet.Cells(i, 5).Value - 100, 2) & "%"
+        reportSheet.Cells(reportRow, 6).value = Round(dataSheet.Cells(i, 5).value - 100, 2) & "%"
 
         ' Intrinsic Value (Force USD Currency Formatting)
-        reportSheet.Cells(reportRow, 7).Value = dataSheet.Cells(i, 8).Value * dataSheet.Cells(i, 22).Value
+        reportSheet.Cells(reportRow, 7).value = dataSheet.Cells(i, 8).value * dataSheet.Cells(i, 22).value / 100
         reportSheet.Cells(reportRow, 7).NumberFormat = "[$$-409]#,##0"
         
         ' Intrinsic Value % (Correct calculation, round to 2 decimal places, and append "%" as a string)
-        reportSheet.Cells(reportRow, 8).Value = Round(dataSheet.Cells(i, 22).Value - 100, 2) & "%"
+        reportSheet.Cells(reportRow, 8).value = dataSheet.Cells(i, 22).value & "%"
         
         ' Accumulate totals for the relevant columns
-        totalAmtInvested = totalAmtInvested + dataSheet.Cells(i, 8).Value
-        totalCurrentValue = totalCurrentValue + reportSheet.Cells(reportRow, 5).Value
-        totalIntrinsicValue = totalIntrinsicValue + reportSheet.Cells(reportRow, 7).Value
-        totalCurrentValuePercent = totalCurrentValuePercent + (dataSheet.Cells(i, 5).Value - 100)
-        totalIntrinsicValuePercent = totalIntrinsicValuePercent + (dataSheet.Cells(i, 22).Value - 100)
+        totalAmtInvested = totalAmtInvested + dataSheet.Cells(i, 8).value
+        totalCurrentValue = totalCurrentValue + reportSheet.Cells(reportRow, 5).value
+        totalIntrinsicValue = totalIntrinsicValue + reportSheet.Cells(reportRow, 7).value
+        totalCurrentValuePercent = totalCurrentValuePercent + (dataSheet.Cells(i, 5).value - 100)
+        totalIntrinsicValuePercent = totalIntrinsicValuePercent + dataSheet.Cells(i, 22).value
         
         ' Protection (Buffer or Barrier)
-        If InStr(1, dataSheet.Cells(i, 4).Value, "Trigger") > 0 Or InStr(1, dataSheet.Cells(i, 4).Value, "Buffer") > 0 Then
-            reportSheet.Cells(reportRow, 9).Value = Round(dataSheet.Cells(i, 16).Value - dataSheet.Cells(i, 11).Value, 0) & "% Buffer"
+        If InStr(1, dataSheet.Cells(i, 4).value, "Trigger") > 0 Or InStr(1, dataSheet.Cells(i, 4).value, "Buffer") > 0 Then
+            reportSheet.Cells(reportRow, 9).value = Round(dataSheet.Cells(i, 16).value - dataSheet.Cells(i, 11).value, 0) & "% Buffer"
         Else
-            reportSheet.Cells(reportRow, 9).Value = Round(dataSheet.Cells(i, 16).Value - dataSheet.Cells(i, 11).Value, 0) & "% Barrier"
+            reportSheet.Cells(reportRow, 9).value = Round(dataSheet.Cells(i, 16).value - dataSheet.Cells(i, 11).value, 0) & "% Barrier"
         End If
         
         ' Protection Level (Percentage Formatting)
-        reportSheet.Cells(reportRow, 10).Value = dataSheet.Cells(i, 16).Value & "%"
+        reportSheet.Cells(reportRow, 10).value = dataSheet.Cells(i, 16).value & "%"
         
         ' Max Return
-        If dataSheet.Cells(i, 29).Value = "" Then
-            reportSheet.Cells(reportRow, 11).Value = "Unlimited"
+        If dataSheet.Cells(i, 29).value = "" Or dataSheet.Cells(i, 29).value <= 0 Then
+            reportSheet.Cells(reportRow, 11).value = "Unlimited"
         Else
-            reportSheet.Cells(reportRow, 11).Value = dataSheet.Cells(i, 29).Value
+            reportSheet.Cells(reportRow, 11).value = dataSheet.Cells(i, 29).value
         End If
         
         ' Upside Participation (Percentage Formatting)
-        reportSheet.Cells(reportRow, 12).Value = dataSheet.Cells(i, 30).Value & "%"
+        reportSheet.Cells(reportRow, 12).value = dataSheet.Cells(i, 30).value & "%"
         
         ' Features
-        reportSheet.Cells(reportRow, 14).Value = dataSheet.Cells(i, 4).Value
+        reportSheet.Cells(reportRow, 14).value = dataSheet.Cells(i, 4).value
         
         ' Underliers: Split into sub-rows and highlight the active underlier
-        underliers = Replace(Replace(dataSheet.Cells(i, 12).Value, "[", ""), "]", "")
-        activeUnderlier = dataSheet.Cells(i, 13).Value
+        underliers = Replace(Replace(dataSheet.Cells(i, 12).value, "[", ""), "]", "")
+        activeUnderlier = dataSheet.Cells(i, 13).value
         underlierList = Split(underliers, ",")
         
         ' Calculate how many rows we need to merge
@@ -167,11 +156,11 @@ Sub REGENERATE_GROWTH_NOTES_REPORT()
             ' Check if this is the active underlier
             If underlierList(j) = activeUnderlier Then
                 ' Append performance and highlight active underlier
-                reportSheet.Cells(reportRow, 13).Value = underlierList(j) & " " & dataSheet.Cells(i, 11).Value & "%"
+                reportSheet.Cells(reportRow, 13).value = underlierList(j) & " " & dataSheet.Cells(i, 11).value & "%"
                 reportSheet.Cells(reportRow, 13).Interior.Color = RGB(169, 208, 142) ' Highlight in light green
             Else
                 ' Just add the underlier
-                reportSheet.Cells(reportRow, 13).Value = underlierList(j)
+                reportSheet.Cells(reportRow, 13).value = underlierList(j)
                 ' Remove background color for non-active underliers
                 reportSheet.Cells(reportRow, 13).Interior.ColorIndex = xlNone
             End If
@@ -179,29 +168,30 @@ Sub REGENERATE_GROWTH_NOTES_REPORT()
         
         ' Move to the next row in the report sheet
         reportRow = reportRow + 1
+    SkipRow:
     Next i
     
     ' Insert the Total row
-    reportSheet.Cells(reportRow, 1).Value = "TOTAL"
+    reportSheet.Cells(reportRow, 1).value = "TOTAL"
     reportSheet.Cells(reportRow, 1).Font.Bold = True
     
     ' Add totals to the appropriate columns
-    reportSheet.Cells(reportRow, 4).Value = totalAmtInvested
+    reportSheet.Cells(reportRow, 4).value = totalAmtInvested
     reportSheet.Cells(reportRow, 4).NumberFormat = "[$$-409]#,##0"
     reportSheet.Cells(reportRow, 4).Font.Bold = True
     
-    reportSheet.Cells(reportRow, 5).Value = totalCurrentValue
+    reportSheet.Cells(reportRow, 5).value = totalCurrentValue
     reportSheet.Cells(reportRow, 5).NumberFormat = "[$$-409]#,##0"
     reportSheet.Cells(reportRow, 5).Font.Bold = True
     
-    reportSheet.Cells(reportRow, 6).Value = Round(totalCurrentValuePercent / (lastRow - 1), 2) & "%"
+    reportSheet.Cells(reportRow, 6).value = Round(totalCurrentValuePercent / totalRows, 2) & "%"
     reportSheet.Cells(reportRow, 6).Font.Bold = True
     
-    reportSheet.Cells(reportRow, 7).Value = totalIntrinsicValue
+    reportSheet.Cells(reportRow, 7).value = totalIntrinsicValue
     reportSheet.Cells(reportRow, 7).NumberFormat = "[$$-409]#,##0"
     reportSheet.Cells(reportRow, 7).Font.Bold = True
     
-    reportSheet.Cells(reportRow, 8).Value = Round(totalIntrinsicValuePercent / (lastRow - 1), 2) & "%"
+    reportSheet.Cells(reportRow, 8).value = Round(totalIntrinsicValuePercent / totalRows, 2) & "%"
     reportSheet.Cells(reportRow, 8).Font.Bold = True
     
     ' Style the total row
@@ -219,7 +209,7 @@ Sub REGENERATE_GROWTH_NOTES_REPORT()
         .Font.Size = 14
     End With
 
-    ' Add black borders to the cells 
+    ' Add black borders to the cells
     With reportSheet.Range(reportSheet.Cells(reportRow, 1), reportSheet.Cells(reportRow, 14)).Borders
         .LineStyle = xlContinuous
         .Color = RGB(0, 0, 0)
@@ -230,4 +220,3 @@ Sub REGENERATE_GROWTH_NOTES_REPORT()
     Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
 End Sub
-
