@@ -3,8 +3,9 @@ Public Function FillReportCell(reportSheet As Worksheet, _
                                columnIndex As Long, _
                                dataSheetRows As Variant, _
                                reportColumn As Variant, _
-                               dataSheetColumns As Collection, _ 
-                               reportRow As Long) As Variant
+                               dataSheetColumns As Collection, _
+                               reportRow As Long, _
+                               reportColumnNumber As Long) As Variant
     Dim cellValue As Variant
     Dim cusipColIndex As Long
     Dim issuerColIndex As Long
@@ -23,6 +24,8 @@ Public Function FillReportCell(reportSheet As Worksheet, _
     Dim paymentsReceivedColIndex As Long
     Dim underliersColIndex As Long
     Dim activeUnderlierColIndex As Long
+
+    Debug.Print "reportColumn(2): " & reportColumn(2)
     
     ' Check if the reporting column is "Issuer/CUSIP"
     If reportColumn(2) = "Issuer/CUSIP" Then
@@ -73,13 +76,13 @@ Public Function FillReportCell(reportSheet As Worksheet, _
             ' Set cellValue to the value of the Amt Invested
             cellValue = dataSheetRows(rowIndex, amtInvestedColIndex)
             ' Apply USD currency formatting to the cell in the report sheet
-            reportSheet.Cells(reportRow, columnIndex).NumberFormat = "[$$-409]#,##0"
+            reportSheet.Cells(reportRow, reportColumnNumber).NumberFormat = "[$$-409]#,##0"
         End If
 
     ' Check if the reporting column is "Current Value"
     ElseIf reportColumn(2) = "Current Value" Then
         ' Validate that the necessary columns exist in dataSheetColumns
-        On Error Resume next
+        On Error Resume Next
         markToMarketColIndex = dataSheetColumns("Mark To Market Value")
         totalNotionalColIndex = dataSheetColumns("Total Notional (USD)")
         On Error GoTo 0
@@ -88,7 +91,7 @@ Public Function FillReportCell(reportSheet As Worksheet, _
             ' Calculate the Current Value
             cellValue = dataSheetRows(rowIndex, markToMarketColIndex) * dataSheetRows(rowIndex, totalNotionalColIndex) / 100
             ' Apply USD currency formatting to the cell in the report sheet
-            reportSheet.Cells(reportRow, columnIndex).NumberFormat = "[$$-409]#,##0"
+            reportSheet.Cells(reportRow, reportColumnNumber).NumberFormat = "[$$-409]#,##0"
         End If
 
     ' Check if the reporting column is "Current Value %"
@@ -103,7 +106,7 @@ Public Function FillReportCell(reportSheet As Worksheet, _
             cellValue = Round(dataSheetRows(rowIndex, markToMarketColIndex) - 100, 2) / 100
 
             ' Apply percentage formatting
-            reportSheet.Cells(reportRow, columnIndex).NumberFormat = "0.00%"
+            reportSheet.Cells(reportRow, reportColumnNumber).NumberFormat = "0.00%"
         End If
 
     ' Check if the reporting column is "Intrinsic Value"
@@ -118,7 +121,7 @@ Public Function FillReportCell(reportSheet As Worksheet, _
             ' Calculate the Intrinsic Value
             cellValue = dataSheetRows(rowIndex, totalNotionalColIndex) * dataSheetRows(rowIndex, intrinsicValueColIndex) / 100
             ' Apply USD currency formatting to the cell in the report sheet
-            reportSheet.Cells(reportRow, columnIndex).NumberFormat = "[$$-409]#,##0"
+            reportSheet.Cells(reportRow, reportColumnNumber).NumberFormat = "[$$-409]#,##0"
         End If
 
     ' Check if the reporting column is "Intrinsic Value %"
@@ -133,7 +136,7 @@ Public Function FillReportCell(reportSheet As Worksheet, _
             cellValue = Round(dataSheetRows(rowIndex, intrinsicValueColIndex), 2) / 100
 
             ' Apply percentage formatting
-            reportSheet.Cells(reportRow, columnIndex).NumberFormat = "0.00%"
+            reportSheet.Cells(reportRow, reportColumnNumber).NumberFormat = "0.00%"
         End If
 
     ' Check if the reporting column is "Protection"
@@ -160,7 +163,7 @@ Public Function FillReportCell(reportSheet As Worksheet, _
     ' Check if the reporting column is "Protection Level"
     ElseIf reportColumn(2) = "Protection Level" Then
         ' Validate that the "Protection Proximity Level Abs" column exists in dataSheetColumns
-        On Error Resume Next        
+        On Error Resume Next
         protectionProximityColIndex = dataSheetColumns("Protection Proximity Level Abs")
         On Error GoTo 0
         
@@ -169,7 +172,7 @@ Public Function FillReportCell(reportSheet As Worksheet, _
             cellValue = dataSheetRows(rowIndex, protectionProximityColIndex) / 100
 
             ' Apply percentage formatting
-            reportSheet.Cells(reportRow, columnIndex).NumberFormat = "0.00%"
+            reportSheet.Cells(reportRow, reportColumnNumber).NumberFormat = "0.00%"
         End If
 
     ' Check if the reporting column is "Max Return"
@@ -200,7 +203,7 @@ Public Function FillReportCell(reportSheet As Worksheet, _
             cellValue = dataSheetRows(rowIndex, upsideParticipationColIndex) / 100
 
             ' Apply percentage formatting
-            reportSheet.Cells(reportRow, columnIndex).NumberFormat = "0.00%"
+            reportSheet.Cells(reportRow, reportColumnNumber).NumberFormat = "0.00%"
         End If
 
     ' Check if the reporting column is "Features"
@@ -228,7 +231,7 @@ Public Function FillReportCell(reportSheet As Worksheet, _
                 cellValue = dataSheetRows(rowIndex, annualYieldColIndex) / 100
 
                 ' Apply percentage formatting
-                reportSheet.Cells(reportRow, columnIndex).NumberFormat = "0.00%"
+                reportSheet.Cells(reportRow, reportColumnNumber).NumberFormat = "0.00%"
             Else
                 cellValue = ""
             End If
@@ -263,7 +266,7 @@ Public Function FillReportCell(reportSheet As Worksheet, _
             cellValue = Round(dataSheetRows(rowIndex, paymentsReceivedColIndex), 2) / 100
 
             ' Apply percentage formatting
-            reportSheet.Cells(reportRow, columnIndex).NumberFormat = "0.00%"
+            reportSheet.Cells(reportRow, reportColumnNumber).NumberFormat = "0.00%"
         End If
 
     ' Check if the reporting column is "$ Paid So Far"
@@ -278,7 +281,7 @@ Public Function FillReportCell(reportSheet As Worksheet, _
             ' Calculate $ Paid So Far
             cellValue = dataSheetRows(rowIndex, totalNotionalColIndex) * dataSheetRows(rowIndex, paymentsReceivedColIndex) / 100
             ' Apply USD currency formatting to the cell in the report sheet
-            reportSheet.Cells(reportRow, columnIndex).NumberFormat = "[$$-409]#,##0"
+            reportSheet.Cells(reportRow, reportColumnNumber).NumberFormat = "[$$-409]#,##0"
         End If
 
     ' Check if the reporting column is "Underliers"
@@ -313,14 +316,14 @@ Public Function FillReportCell(reportSheet As Worksheet, _
                 
                 ' Check if this is the active underlier
                 If underlierList(j) = activeUnderlier Then
-                    ' Append performance and highlight active underlier in the report sheet at columnIndex
-                    reportSheet.Cells(reportRow, columnIndex).Value = underlierList(j) & " " & Round(dataSheetRows(rowIndex, underlierPerformanceColIndex), 2) & "%"
-                    reportSheet.Cells(reportRow, columnIndex).Interior.Color = RGB(169, 208, 142) ' Highlight in light green
+                    ' Append performance and highlight active underlier in the report sheet at reportColumnNumber
+                    reportSheet.Cells(reportRow, reportColumnNumber).value = underlierList(j) & " " & Round(dataSheetRows(rowIndex, underlierPerformanceColIndex), 2) & "%"
+                    reportSheet.Cells(reportRow, reportColumnNumber).Interior.Color = RGB(169, 208, 142) ' Highlight in light green
                 Else
                     ' Just add the underlier
-                    reportSheet.Cells(reportRow, columnIndex).Value = underlierList(j)
+                    reportSheet.Cells(reportRow, reportColumnNumber).value = underlierList(j)
                     ' Remove background color for non-active underliers
-                    reportSheet.Cells(reportRow, columnIndex).Interior.ColorIndex = xlNone
+                    reportSheet.Cells(reportRow, reportColumnNumber).Interior.ColorIndex = xlNone
                 End If
             Next j
         End If
@@ -333,7 +336,7 @@ Public Function FillReportCell(reportSheet As Worksheet, _
     End If
 
     ' Use reportRow and columnIndex to fill a cell in reportSheet with the calculated cellValue
-    reportSheet.Cells(reportRow, columnIndex).Value = cellValue
+    reportSheet.Cells(reportRow, reportColumnNumber).value = cellValue
 
     ' Return the calculated or fetched cell value
     FillReportCell = cellValue
@@ -349,26 +352,6 @@ End Function
 
 Public Function AddTotalsRow(sheet As Worksheet)
   
-End Function
-
-Public Function ResetReport(reportSheet As Worksheet)
-    Dim lastRow As Long
-    
-    ' Find the last row in the sheet (where the previous totals row might be)
-    lastRow = reportSheet.Cells(reportSheet.Rows.Count, 1).End(xlUp).row
-
-    ' If the last row contains "TOTAL", reset its row height before clearing
-    If reportSheet.Cells(lastRow, 1).value = "TOTAL" Then
-        reportSheet.Rows(lastRow).RowHeight = reportSheet.StandardHeight ' Reset to default row height
-    End If
-    
-    ' Clear all contents (values, formulas) and formats starting from row 3 onwards
-    With reportSheet.Rows("1:" & reportSheet.Rows.Count)
-        .ClearContents
-        .ClearFormats
-        .HorizontalAlignment = xlCenter
-        .VerticalAlignment = xlCenter
-    End With
 End Function
 
 Public Function IsEmptySheet(sheet As Worksheet) As Boolean
@@ -399,7 +382,7 @@ Public Function GetDataSheetRows(ByVal ws As Worksheet, dataSheetColumns As Coll
     Set filteredRows = New Collection
     
     ' Find the last row with data in column A
-    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).row
     
     ' Find the last column with data in the first row
     lastCol = ws.Cells(1, ws.Columns.Count).End(xlToLeft).Column
@@ -418,12 +401,12 @@ Public Function GetDataSheetRows(ByVal ws As Worksheet, dataSheetColumns As Coll
     
     ' If "Return Type" column is not found, return all rows
     If returnTypeColIndex = 0 Then
-        GetDataSheetRows = ws.Cells(2, 1).Resize(lastRow - 1, lastCol).Value
+        GetDataSheetRows = ws.Cells(2, 1).Resize(lastRow - 1, lastCol).value
         Exit Function
     End If
     
     ' Get the data range (excluding the header row) as a 2D array
-    dataRange = ws.Cells(2, 1).Resize(lastRow - 1, lastCol).Value
+    dataRange = ws.Cells(2, 1).Resize(lastRow - 1, lastCol).value
     
     ' Loop through each row and filter based on the Return Type
     For i = 1 To UBound(dataRange, 1)
@@ -460,9 +443,6 @@ Public Function GetDataSheetRows(ByVal ws As Worksheet, dataSheetColumns As Coll
     End If
 End Function
 
-
-
-
 ' Function to retrieve sheet headers from the first row with their indices
 Public Function GetDataSheetColumns(ByVal ws As Worksheet) As Collection
     Dim lastCol As Long
@@ -475,7 +455,7 @@ Public Function GetDataSheetColumns(ByVal ws As Worksheet) As Collection
     
     ' Populate the Collection with headers and their indices
     For i = 1 To lastCol
-        headerName = Trim$(ws.Cells(1, i).Value) ' Trim to remove any leading/trailing spaces
+        headerName = Trim$(ws.Cells(1, i).value) ' Trim to remove any leading/trailing spaces
         If LenB(headerName) > 0 Then
             On Error Resume Next
             headers.Add i, headerName ' Add index with headerName as key
@@ -498,55 +478,26 @@ Public Sub StyleRow(ByRef sheet As Worksheet, ByVal row As Long)
     End With
 End Sub
 
-Public Function GetColumnsOfReport(reportName As String) As String()
-  Dim ws As Worksheet
+Public Function GetColumnsOfReport(reportSheet As Worksheet) As String()
   Dim colIndex As Integer
-  Dim rowIndex As Integer
-  Dim lastRow As Long
+  Dim lastCol As Integer
   Dim dataArray() As String
-  Dim reportFound As Boolean
   Dim resultCounter As Integer
   
-  ' Assuming that the current active sheet is the one containing the report data
-  Set ws = ThisWorkbook.Sheets("REPORTS")
+  ' Find the last column with data in the second row
+  lastCol = reportSheet.Cells(2, reportSheet.Columns.Count).End(xlToLeft).Column
   
-  ' Search the first row for the matching report name
-  reportFound = False
-  For colIndex = 1 To ws.Cells(1, ws.Columns.Count).End(xlToLeft).Column
-    If ws.Cells(1, colIndex).value = reportName Then
-      reportFound = True
-      Exit For
-    End If
-  Next colIndex
-  
-  ' If the report name is not found, return an empty string array
-  If Not reportFound Then
-    ReDim dataArray(0 To 0) ' Return an empty string array with 0 elements
-    GetColumnsOfReport = dataArray
-    Exit Function
-  End If
-  
-  ' Find the last row in the report's column with data
-  lastRow = ws.Cells(ws.Rows.Count, colIndex).End(xlUp).row
-  
-  ' Validate that lastRow is >= 2 to ensure there is data beyond the header row
-  If lastRow < 2 Then
-    ReDim dataArray(0 To 0) ' Return an empty string array
-    GetColumnsOfReport = dataArray
-    Exit Function
-  End If
-  
-  ' Initialize a dynamic array based on the data rows
-  ReDim dataArray(1 To lastRow - 1) ' Initialize the array with size equal to number of rows minus the header
+  ' Initialize the dynamic array based on the number of filled cells in the second row
+  ReDim dataArray(1 To lastCol - 1) ' Initialize the array with size equal to number of columns minus the first column
   
   resultCounter = 0
-  ' Loop through each row in the found column from row 2 to lastRow and collect the values
-  For rowIndex = 2 To lastRow
-    If ws.Cells(rowIndex, colIndex).value <> "" Then
+  ' Loop through each cell in the second row starting from the second column
+  For colIndex = 2 To lastCol
+    If reportSheet.Cells(2, colIndex).Value <> "" Then
       resultCounter = resultCounter + 1
-      dataArray(resultCounter) = ws.Cells(rowIndex, colIndex).value
+      dataArray(resultCounter) = Trim(reportSheet.Cells(2, colIndex).Value)
     End If
-  Next rowIndex
+  Next colIndex
   
   ' Resize the array to the actual number of items found
   If resultCounter = 0 Then
@@ -557,6 +508,7 @@ Public Function GetColumnsOfReport(reportName As String) As String()
   
   GetColumnsOfReport = dataArray
 End Function
+
 
 Public Function GetReportingColumns() As Variant
   Dim lastCol As Long
@@ -580,13 +532,11 @@ Public Function GetReportingColumns() As Variant
     
     ' Populate the array with values from the corresponding rows
     reportingColumn(1) = colIndex
-    reportingColumn(2) = ws.Cells(3, colIndex).Value
-    reportingColumn(3) = (ws.Cells(4, colIndex).Value = True)
-    reportingColumn(4) = ws.Cells(5, colIndex).Value
-    reportingColumn(5) = ws.Cells(6, colIndex).Value
-    reportingColumn(6) = ws.Cells(7, colIndex).Value
-
-    Debug.Print "Percentage Format: " & ws.Cells(7, colIndex).Value
+    reportingColumn(2) = ws.Cells(3, colIndex).value
+    reportingColumn(3) = (ws.Cells(4, colIndex).value = True)
+    reportingColumn(4) = ws.Cells(5, colIndex).value
+    reportingColumn(5) = ws.Cells(6, colIndex).value
+    reportingColumn(6) = ws.Cells(7, colIndex).value
     
     ' Store the array in the reportingColumnsArray
     reportingColumnsArray(colIndex - 1) = reportingColumn
@@ -602,7 +552,7 @@ Public Function GetReportingColumnByName(reportingColumnsArray As Variant, colum
   ' Loop through the reportingColumnsArray to find the matching column by name
   For i = LBound(reportingColumnsArray) To UBound(reportingColumnsArray)
     ' Check if the name matches the requested columnName
-    If reportingColumnsArray(i)(2) = columnName Then
+    If reportingColumnsArray(i)(2) = Trim(columnName) Then
       ' Return the matching reportingColumn array
       GetReportingColumnByName = reportingColumnsArray(i)
       Exit Function
@@ -613,7 +563,7 @@ Public Function GetReportingColumnByName(reportingColumnsArray As Variant, colum
   GetReportingColumnByName = Empty
 End Function
 
-Public Function GetReportColumns(reportName As String) As Variant
+Public Function GetReportColumns(reportSheet As Worksheet) As Variant
     Dim reportColumnsArray As Variant
     Dim columnNamesArray() As String
     Dim reportingColumnsArray As Variant
@@ -624,7 +574,7 @@ Public Function GetReportColumns(reportName As String) As Variant
     reportingColumnsArray = GetReportingColumns()
     
     ' Get the array of column names for the specified report
-    columnNamesArray = GetColumnsOfReport(reportName)
+    columnNamesArray = GetColumnsOfReport(reportSheet)
     
     ' Initialize the array to hold the report columns structure
     ReDim reportColumnsArray(1 To UBound(columnNamesArray))
@@ -633,7 +583,7 @@ Public Function GetReportColumns(reportName As String) As Variant
     For i = LBound(columnNamesArray) To UBound(columnNamesArray)
         ' Get the column configuration by name
         reportColumn = GetReportingColumnByName(reportingColumnsArray, columnNamesArray(i))
-        
+
         ' If the column configuration is found, build the report column object
         If Not IsEmpty(reportColumn) Then
             reportColumnIndex = i
@@ -643,12 +593,12 @@ Public Function GetReportColumns(reportName As String) As Variant
             
             ' Populate the report column object
             reportColumnObject(1) = reportColumnIndex ' Index in column names array
-            reportColumnObject(2) = reportColumn(2) ' Column name
+            reportColumnObject(2) = Trim(reportColumn(2)) ' Column name
             reportColumnObject(3) = reportColumn(3) ' Calculate total? (True/False)
             reportColumnObject(4) = reportColumn(4) ' Total value calculation method
             reportColumnObject(5) = reportColumn(5) ' Calculation method description
-            reportColumnObject(6) = 0.0 ' Total value initialized to 0
-            reportColumnObject(7) = reportColumn(6) ' Calculation method description
+            reportColumnObject(6) = 0 ' Total value initialized to 0
+            reportColumnObject(7) = reportColumn(6) ' total value number format
             
             ' Add the report column object to the report columns array
             reportColumnsArray(i) = reportColumnObject
@@ -663,12 +613,12 @@ Sub DrawReportHeaders(reportSheet As Worksheet, reportName As String, reportColu
     ' First Row: Merge all columns, center the text, and apply formatting
     With reportSheet
         .Range(.Cells(1, 1), .Cells(1, UBound(reportColumns))).Merge
-        .Cells(1, 1).Value = reportName
+        .Cells(1, 1).value = reportName
         .Cells(1, 1).HorizontalAlignment = xlCenter
         .Cells(1, 1).VerticalAlignment = xlCenter
         .Cells(1, 1).Font.Bold = True
         .Cells(1, 1).Font.Size = 16
-        .Cells(1, 1).Font.Name = "Arial"
+        .Cells(1, 1).Font.name = "Arial"
         .Cells(1, 1).Interior.Color = RGB(163, 191, 226) ' Background color #A3BFE2
         .Cells(1, 1).Borders.LineStyle = xlContinuous
         .Rows(1).RowHeight = 60
@@ -678,12 +628,12 @@ Sub DrawReportHeaders(reportSheet As Worksheet, reportName As String, reportColu
     Dim i As Long
     For i = LBound(reportColumns) To UBound(reportColumns)
         With reportSheet.Cells(2, i)
-            .Value = reportColumns(i)(2)
+            .value = reportColumns(i)(2)
             .HorizontalAlignment = xlCenter
             .VerticalAlignment = xlCenter
             .Font.Bold = True
             .Font.Size = 14
-            .Font.Name = "Arial"
+            .Font.name = "Arial"
             .Interior.Color = RGB(221, 235, 247) ' Light blue background
             .Borders.LineStyle = xlContinuous
             .WrapText = True
@@ -710,36 +660,41 @@ Sub DrawReportTotals(reportSheet As Worksheet, reportColumns As Variant, reportR
     ' Add a new row at the end of the report
     reportSheet.Rows(reportRow).RowHeight = 60
     
-    ' Initialize firstTotalColumn as 0
-    firstTotalColumn = 1
-    
+    ' Label of Total columns
+    With reportSheet.Cells(reportRow, 1)
+        .value = "Total"
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .Font.Bold = True
+        .Font.Size = 14
+        .Font.name = "Arial"
+        .Interior.Color = RGB(221, 235, 247) ' Light blue background
+        .Borders.LineStyle = xlContinuous
+    End With
+
     ' Loop through each report column
     For i = LBound(reportColumns) To UBound(reportColumns)
-        With reportSheet.Cells(reportRow, i)
+        With reportSheet.Cells(reportRow, i + 1)
             ' Center the text, apply formatting, and set the background color
             .HorizontalAlignment = xlCenter
             .VerticalAlignment = xlCenter
             .Font.Bold = True
             .Font.Size = 14
-            .Font.Name = "Arial"
+            .Font.name = "Arial"
             .Interior.Color = RGB(221, 235, 247) ' Light blue background
             .Borders.LineStyle = xlContinuous
             
             ' Check if the reportColumn(3) is True (calculate total)
             If reportColumns(i)(3) = True Then
-                If firstTotalColumn = 1 Then
-                    firstTotalColumn = i
-                End If
-                
                 If reportColumns(i)(4) = "Sum" Then
                     ' Put the Sum in the cell value
-                    .Value = reportColumns(i)(6)
+                    .value = reportColumns(i)(6)
                 ElseIf reportColumns(i)(4) = "Average" Then
                     ' Calculate the Average and put it in the cell value
                     If reportRow > 0 Then
-                        .Value = reportColumns(i)(6) / dataCount
+                        .value = reportColumns(i)(6) / dataCount
                     Else
-                        .Value = reportColumns(i)(6)
+                        .value = reportColumns(i)(6)
                     End If
                 End If
 
@@ -747,31 +702,224 @@ Sub DrawReportTotals(reportSheet As Worksheet, reportColumns As Variant, reportR
                     .NumberFormat = Replace(reportColumns(i)(7), """", "")
                 End If
             Else
-                .Value = ""
+                .value = ""
             End If
         End With
     Next i
-
-    ' Merge columns from start to the firstTotalColumn and set the value to "Total"
-    If firstTotalColumn > 1 Then
-        With reportSheet.Range(reportSheet.Cells(reportRow, 1), reportSheet.Cells(reportRow, firstTotalColumn - 1))
-            .Merge
-            .Value = "Total"
-            .HorizontalAlignment = xlCenter
-            .VerticalAlignment = xlCenter
-            .Font.Bold = True
-            .Font.Size = 14
-            .Font.Name = "Arial"
-            .Interior.Color = RGB(221, 235, 247) ' Light blue background
-            .Borders.LineStyle = xlContinuous
-        End With
-    End If
 End Sub
 
-Sub ExportReport(reportSheet As Worksheet)
-    Dim newWorkbook As Workbook
+Sub AddToContextMenu()
+    Dim contextMenu As CommandBar
+    Dim newMenuItem As CommandBarButton
     
+    ' Reference the cell context menu
+    Set contextMenu = Application.CommandBars("Cell")
+    
+    ' Remove the custom menu item if it already exists to avoid duplicates
+    On Error Resume Next
+    contextMenu.Controls("Create a new report sheet from selection").Delete
+    On Error GoTo 0
+    
+    ' Add a new menu item
+    Set newMenuItem = contextMenu.Controls.Add(Type:=msoControlButton, Temporary:=True)
+    
+    ' Set properties for the new menu item
+    With newMenuItem
+        .Caption = "Create a new report sheet from selection"
+        .OnAction = "Utils.CreateReportSheetFromSelection" ' Link to the macro
+    End With
+End Sub
+
+Sub RemoveFromContextMenu()
+    Dim contextMenu As CommandBar
+    
+    ' Reference the cell context menu
+    Set contextMenu = Application.CommandBars("Cell")
+    
+    ' Remove the custom menu item
+    On Error Resume Next
+    contextMenu.Controls("Create New Sheet from Selection").Delete
+    On Error GoTo 0
+End Sub
+
+Sub CreateReportSheetFromSelection()
+  Dim selectedRange As Range
+  Dim reportName As String
+  Dim reportColumns As Range
+  Dim newSheet As Worksheet
+  Dim colCount As Long
+  Dim i As Long
+  Dim generateButton As Object
+  Dim exportButton As Object
+  Dim buttonWidth As Double
+  Dim buttonHeight As Double
+  Dim buttonSpacing As Double
+  Dim buttonLeftPosition As Double
+  Dim textWidth As Double
+  Dim response As VbMsgBoxResult
+  
+  ' Step 1: Validate the selected cells
+  Set selectedRange = Selection
+  
+  ' Check if the selection is in one column and has at least 2 rows
+  If selectedRange.Columns.Count <> 1 Or selectedRange.Rows.Count < 2 Then
+    MsgBox "Please select a single column with at least 2 rows.", vbExclamation
+    Exit Sub
+  End If
+  
+  ' Check if any cells in the selection are empty
+  If WorksheetFunction.CountBlank(selectedRange) > 0 Then
+    MsgBox "Please make sure all selected cells are not empty.", vbExclamation
+    Exit Sub
+  End If
+  
+  ' Step 2: Assign the first row as the report name and the rest as report columns
+  reportName = selectedRange.Cells(1, 1).Value
+  Set reportColumns = selectedRange.Offset(1, 0).Resize(selectedRange.Rows.Count - 1, 1)
+  
+  ' Step 3: Create a new sheet with the report name
+  On Error Resume Next
+  Set newSheet = ThisWorkbook.Sheets(reportName)
+  On Error GoTo 0
+  
+    ' Check if the new sheet already exists
+    If Not newSheet Is Nothing Then
+        response = MsgBox("Click Yes to replace it, No to rename the new sheet, or Cancel to terminate the operation at all.", _
+                        vbExclamation + vbYesNoCancel + vbDefaultButton3, "A sheet with the name '" & reportName & "' already exists")
+
+        Select Case response
+            Case vbYes ' Replace button
+                ' Delete the existing sheet and proceed to create the new one
+                Application.DisplayAlerts = False
+                newSheet.Delete
+                Application.DisplayAlerts = True
+                
+            Case vbNo ' Rename button
+                ' Focus the cursor on the first cell in the selected range to allow renaming
+                selectedRange.Cells(1, 1).Select
+                Exit Sub
+
+            Case vbCancel ' Cancel button
+                ' Do nothing and just close the message box
+                Exit Sub
+        End Select
+    End If
+  
+  Set newSheet = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets(1))
+  newSheet.Name = reportName
+  
+  ' Step 4: Format the first row in the new sheet
+  colCount = reportColumns.Rows.Count
+  
+  With newSheet
+    ' Merge all columns in the first row for the report title
+    .Range(.Cells(1, 1), .Cells(1, colCount + 1)).Merge
+    .Cells(1, 1).Value = reportName
+    .Cells(1, 1).Font.Name = "Arial"
+    .Cells(1, 1).Font.Size = 16
+    .Cells(1, 1).Font.Bold = True
+    .Cells(1, 1).HorizontalAlignment = xlLeft
+    .Cells(1, 1).VerticalAlignment = xlCenter
+    .Cells(1, 1).Interior.Color = RGB(168, 190, 223) ' Background color #A8BEDF
+    .Cells(1, 1).Borders.LineStyle = xlContinuous
+    .Rows(1).RowHeight = 60
+    
+    ' Step 5: Add an empty cell in the first column of the second row
+    .Cells(2, 1).Value = "                                 "
+    .Cells(2, 1).Font.Name = "Arial"
+    .Cells(2, 1).Font.Size = 14
+    .Cells(2, 1).Font.Bold = True
+    .Cells(2, 1).HorizontalAlignment = xlCenter
+    .Cells(2, 1).VerticalAlignment = xlCenter
+    .Cells(2, 1).Interior.Color = RGB(223, 235, 246) ' Background color #DFEBF6
+    .Cells(2, 1).Borders.LineStyle = xlContinuous
+
+    ' Step 6: Format and add report columns in the second row starting from the second column
+    For i = 1 To reportColumns.Rows.Count
+      .Cells(2, i + 1).Value = " " & reportColumns.Cells(i, 1).Value & " "
+      .Cells(2, i + 1).Font.Name = "Arial"
+      .Cells(2, i + 1).Font.Size = 14
+      .Cells(2, i + 1).Font.Bold = True
+      .Cells(2, i + 1).HorizontalAlignment = xlCenter
+      .Cells(2, i + 1).VerticalAlignment = xlCenter
+      .Cells(2, i + 1).Interior.Color = RGB(223, 235, 246) ' Background color #DFEBF6
+      .Cells(2, i + 1).Borders.LineStyle = xlContinuous
+    Next i
+    
+    .Rows(2).RowHeight = 60
+    
+    ' Step 7: Auto-fit column width for title cells and add indentation
+    .Columns.AutoFit
+    
+    ' Add indentation to title cells
+    For i = 2 To reportColumns.Rows.Count + 1
+      .Cells(2, i).ColumnWidth = .Cells(2, i).ColumnWidth + 2 ' Add extra space for padding
+      .Cells(2, i).IndentLevel = 1 ' Apply an indent
+    Next i
+    
+    ' Step 9: Add buttons in the first row after the report title
+    buttonWidth = 100
+    buttonHeight = 30
+    buttonSpacing = 40 ' 40 pixels after the value
+    
+    ' Calculate text width of the report name
+    textWidth = .Cells(1, 1).Width
+    
+    ' Position buttons after the text width plus the spacing
+    buttonLeftPosition = textWidth + buttonSpacing
+    
+    ' Add "Generate" button
+    Set generateButton = .Buttons.Add(Left:=buttonLeftPosition, _
+                                      Top:=.Cells(1, 1).Top + 15, Width:=buttonWidth, Height:=buttonHeight)
+    With generateButton
+      .Caption = "Generate"
+      .Font.Name = "Arial"
+      .Font.Size = 14
+      .Font.Bold = True
+      .OnAction = "Utils.GenerateReport"
+    End With
+    
+    ' Add "Export" button next to "Generate"
+    Set exportButton = .Buttons.Add(Left:=buttonLeftPosition + buttonWidth + buttonSpacing, _
+                                    Top:=.Cells(1, 1).Top + 15, Width:=buttonWidth, Height:=buttonHeight)
+    With exportButton
+      .Caption = "Export"
+      .Font.Name = "Arial"
+      .Font.Size = 14
+      .Font.Bold = True
+      .OnAction = "Utils.ExportReport"
+    End With
+
+    ' Auto focus first cell in second row (report columns row)
+    .Cells(2, 1).Select
+  End With
+End Sub
+
+Sub ResetReport()
+    Dim reportSheet As Worksheet
+    Set reportSheet = ThisWorkbook.ActiveSheet
+
+    Dim lastRow As Long
+    
+    ' Find the last row in the sheet (where the previous totals row might be)
+    lastRow = reportSheet.Cells(reportSheet.Rows.Count, 1).End(xlUp).row
+    
+    ' Clear all contents (values, formulas) and formats starting from row 3 onwards
+    With reportSheet.Rows("3:" & reportSheet.Rows.Count)
+        .ClearContents
+        .ClearFormats
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .RowHeight = reportSheet.StandardHeight
+    End With
+End Sub
+
+Sub ExportReport()
+    Dim reportSheet As Worksheet
+    Set reportSheet = ThisWorkbook.ActiveSheet
+
     ' Create a new workbook
+    Dim newWorkbook As Workbook
     Set newWorkbook = Workbooks.Add
     
     ' Copy the reportSheet to the new workbook
@@ -782,7 +930,7 @@ Sub ExportReport(reportSheet As Worksheet)
     Set copiedSheet = newWorkbook.Sheets(1)
     
     ' Remove all buttons (form controls) from the copied sheet
-    Dim shape As Shape
+    Dim shape As shape
     For Each shape In copiedSheet.Shapes
         If shape.Type = msoFormControl Then
             shape.Delete
@@ -792,7 +940,7 @@ Sub ExportReport(reportSheet As Worksheet)
     ' Remove any other sheets in the new workbook
     Dim ws As Worksheet
     For Each ws In newWorkbook.Sheets
-        If ws.Name <> copiedSheet.Name Then
+        If ws.name <> copiedSheet.name Then
             Application.DisplayAlerts = False
             ws.Delete
             Application.DisplayAlerts = True
@@ -804,10 +952,87 @@ Sub ExportReport(reportSheet As Worksheet)
     Application.DisplayAlerts = True
     newWorkbook.SaveAs
     On Error GoTo 0
-    
-    ' Notify the user
-    MsgBox "Report has been exported successfully.", vbInformation
 End Sub
 
+Sub GenerateReport()
+    Application.ScreenUpdating = False ' Turn off screen updating
+    Application.Calculation = xlCalculationManual ' Turn off automatic calculation
 
+    Dim reportSheet As Worksheet
+    Set reportSheet = ThisWorkbook.ActiveSheet
 
+    Dim dataSheet As Worksheet
+    Set dataSheet = ThisWorkbook.Sheets("DATA SHEET")
+
+    ' Check if the data sheet is empty (i.e., only headers or completely empty)
+    If IsEmptySheet(dataSheet) Then
+        MsgBox "The DATA SHEET is empty. No data available to generate the report.", vbExclamation
+        Application.ScreenUpdating = True ' Turn screen updating back on
+        Application.Calculation = xlCalculationAutomatic ' Turn calculation back on
+        Exit Sub
+    End If
+    
+    ' Reset the report sheet to its initial state
+    Call ResetReport()
+
+    ' Get the structured report columns for a specific report name
+    Dim reportColumns As Variant
+    reportColumns = GetReportColumns(reportSheet)
+
+    ' Get column headers from data sheet using the Collection method
+    Dim dataSheetColumns As Collection
+    Set dataSheetColumns = GetDataSheetColumns(dataSheet)
+
+    ' Get rows from data sheet
+    Dim dataSheetRows As Variant
+    dataSheetRows = GetDataSheetRows(dataSheet, dataSheetColumns, reportSheet.name)
+
+    Dim cellValue As Variant
+    Dim rowIndex As Long, columnIndex As Long, reportRow As Long, iterationRow As Long, reportColumnNumber As Long
+    Dim haveUnderliers As Boolean
+
+    reportRow = 3
+    iterationRow = 3
+    haveUnderliers = False
+
+    ' Loop through data sheet rows
+    For rowIndex = LBound(dataSheetRows) To UBound(dataSheetRows)
+        ' Loop through report columns
+        For columnIndex = LBound(reportColumns) To UBound(reportColumns)
+            reportColumnNumber = columnIndex + 1
+
+            ' Fill the cell in report sheet (current cell)
+            cellValue = FillReportCell(reportSheet, rowIndex, columnIndex, dataSheetRows, reportColumns(columnIndex), dataSheetColumns, reportRow, reportColumnNumber)
+            
+            If reportColumns(columnIndex)(2) = "Underliers" Then
+                reportRow = cellValue
+                haveUnderliers = True
+            End IF
+
+            ' If current report sheet columnIndex "calculate total?" is True then update totalValue
+            If reportColumns(columnIndex)(3) Then
+                reportColumns(columnIndex)(6) = reportColumns(columnIndex)(6) + cellValue
+            End If
+        Next columnIndex
+
+        ' If reportColumns(columnIndex)(2) = "Underliers"
+        If haveUnderliers Then
+             ' Merge cells for the columns that should be merged if empty
+            For columnIndex = 1 To UBound(reportColumns)
+                If reportColumns(columnIndex)(2) <> "Underliers" And iterationRow <> reportRow Then
+                    reportSheet.Range(reportSheet.Cells(iterationRow, columnIndex + 1), reportSheet.Cells(reportRow, columnIndex + 1)).Merge
+                End If
+            Next columnIndex
+        End IF
+
+        reportRow = reportRow + 1
+        iterationRow = reportRow
+    Next rowIndex
+
+    ' Draw report totals (last row in the report)
+    Call DrawReportTotals(reportSheet, reportColumns, reportRow, UBound(dataSheetRows))
+
+    ' Turn screen updating and calculation back on
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+End Sub
