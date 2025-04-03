@@ -1,10 +1,10 @@
 const routerOptions = [
-  {
-    path: "/",
-    name: "HomePage",
-    component: "home/HomePage",
-    meta: {},
-  },
+  // {
+  //   path: "/",
+  //   name: "HomePage",
+  //   component: "home/HomePage",
+  //   meta: {},
+  // },
   {
     path: "/quiz",
     name: "QuizFunnelPage",
@@ -57,6 +57,12 @@ const routerOptions = [
     path: "/debug",
     name: "DebugPage",
     component: "debug/Index",
+    meta: {},
+  },
+  {
+    path: "/Leola",
+    name: "LeolaPage",
+    component: "leola/Index",
     meta: {},
   },
   {
