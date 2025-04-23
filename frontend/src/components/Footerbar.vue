@@ -3,7 +3,7 @@
     <div
       class="container-fluid h-100 d-flex justify-content-between align-items-center"
     >
-      <span>&copy; 2024 Demo. All rights reserved.</span>
+      <span>&copy; 2025 Demo. All rights reserved.</span>
     </div>
   </footer>
 </template>
