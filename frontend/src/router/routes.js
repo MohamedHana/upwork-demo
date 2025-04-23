@@ -66,6 +66,12 @@ const routerOptions = [
     meta: {},
   },
   {
+    path: "/HotelWorkforce",
+    name: "HotelWorkforcePage",
+    component: "HotelWorkforce/Index",
+    meta: {},
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "PageNotFound",
     component: "error/Error404",
