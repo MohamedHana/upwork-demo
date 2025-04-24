@@ -72,6 +72,12 @@ const routerOptions = [
     meta: {},
   },
   {
+    path: "/CleManager",
+    name: "CleManagerPage",
+    component: "CleManager/Index",
+    meta: {},
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "PageNotFound",
     component: "error/Error404",
